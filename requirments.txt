@@ -1,0 +1,11 @@
+Django==1.10.6
+django-pipeline==1.6.12
+django-pipeline-browserify==0.6.1
+djangorestframework==3.6.2
+docxtpl==0.3.5
+Jinja2==2.9.5
+lxml==3.7.3
+MarkupSafe==1.0
+python-dateutil==2.6.0
+python-docx==0.8.6
+six==1.10.0
