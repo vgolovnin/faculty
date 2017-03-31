@@ -4,6 +4,28 @@ from django.db.models import When, Case, Count, Value
 from datetime import date
 from dateutil import relativedelta
 
+
+class Department(models.Model):
+    name = models.CharField(max_length=200)
+    contact_info = models.TextField()
+    quota = models.IntegerField(default=4)
+    parent = models.ForeignKey('Department', related_name='children', null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Подразделение"
+        verbose_name_plural = "Подразделения"
+
+    @property
+    def full_name(self):
+        if self.parent is None:
+            return self.name
+        else:
+            return "%s, %s" % (self.parent.full_name, self.name)
+
+    def __str__(self):
+        return self.name
+
+
 class Category(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField('Описание', blank=True)
@@ -34,6 +56,7 @@ class Stage(models.Model):
     deadline = models.DateField('Крайний срок')
     categories = models.ManyToManyField(Category)
     statuses = models.ManyToManyField(Status)
+    departments = models.ManyToManyField(Department)
     template_file = models.FileField('Файд шаблона', null=True, blank=True, upload_to='report_templates')
 
     class Meta:
@@ -43,26 +66,6 @@ class Stage(models.Model):
     def __str__(self):
         return self.name
 
-
-class Department(models.Model):
-    name = models.CharField(max_length=200)
-    contact_info = models.TextField()
-    quota = models.IntegerField(default=4)
-    parent = models.ForeignKey('Department', related_name='children', null=True, blank=True)
-
-    class Meta:
-        verbose_name = "Подразделение"
-        verbose_name_plural = "Подразделения"
-
-    @property
-    def full_name(self):
-        if self.parent is None:
-            return self.name
-        else:
-            return "%s, %s" % (self.parent.full_name, self.name)
-
-    def __str__(self):
-        return self.name
 
 
 class Reservist(models.Model):
@@ -84,7 +87,7 @@ class Reservist(models.Model):
     hse = models.DateField('Дата начала работы в ВШЭ')
 
     def current_stages(self):
-        return Stage.objects.filter(categories=self.category, statuses=self.status)\
+        return Stage.objects.filter(categories=self.category, statuses=self.status, departments=self.department)\
             .annotate(done=Count(Case(When(reservists=self, then=Value(True))), distinct=True))\
             .order_by('deadline')
 
