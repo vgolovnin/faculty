@@ -9,9 +9,8 @@ https://docs.djangoproject.com/en/1.10/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
-from os.path import dirname
-
 import os
+from os.path import dirname
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -152,6 +151,10 @@ PIPELINE = {
             'source_filenames': ('lodash/dist/lodash.js',),
             'output_filename': 'js/lodash.js'
         },
+        'academic-admin': {
+            'source_filenames': ('css/academic-admin.js',),
+            'output_filename': 'css/academic-admin.js'
+        }
     },
     'STYLESHEETS': {
         'foundation': {

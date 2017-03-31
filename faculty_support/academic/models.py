@@ -1,8 +1,8 @@
-from django.db import models
-
-from django.db.models import When, Case, Count, Value
 from datetime import date
+
 from dateutil import relativedelta
+from django.db import models
+from django.db.models import When, Case, Count, Value
 
 
 class Department(models.Model):
@@ -51,7 +51,7 @@ class Status(models.Model):
 
 
 class Stage(models.Model):
-    name = models.CharField('Этап', max_length=200)
+    name = models.CharField('Название', max_length=200)
     description = models.TextField('Описание', blank=True)
     deadline = models.DateField('Крайний срок')
     categories = models.ManyToManyField(Category)
@@ -73,17 +73,17 @@ class Reservist(models.Model):
         verbose_name = "Участник программы"
         verbose_name_plural = "Участники программы"
 
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, verbose_name='ФИО')
     email = models.EmailField()
-    comment = models.TextField(blank=True, null=True)
-    personal_page = models.URLField(blank=True)
+    comment = models.TextField('Комментарий', blank=True, null=True)
+    personal_page = models.URLField(blank=True, verbose_name='Личная страница')
     birthday = models.DateField('Дата рождения')
-    category = models.ForeignKey(Category, null=True)
-    status = models.ForeignKey(Status, null=True, related_name='reservists')
+    category = models.ForeignKey(Category, null=True, verbose_name="Конкурсная категория")
+    status = models.ForeignKey(Status, null=True, related_name='reservists', verbose_name="Статус участия")
     stages = models.ManyToManyField(Stage, related_name='reservists', blank=True, editable=False)
-    department = models.ForeignKey(Department, verbose_name="Основное место работы", null=True)
-    position = models.CharField(max_length=200, verbose_name="Должность", default="Сотрудник")
-    phd = models.DateField('Дата получения учёной степени (если есть)', null=True, blank=True)
+    department = models.ForeignKey(Department, verbose_name="Подразделение", null=True)
+    position = models.CharField(max_length=200, verbose_name="Должность")
+    phd = models.DateField('Дата получения учёной степени', null=True, blank=True)
     hse = models.DateField('Дата начала работы в ВШЭ')
 
     def current_stages(self):
