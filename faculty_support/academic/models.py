@@ -2,7 +2,6 @@ from datetime import date
 
 from dateutil import relativedelta
 from django.db import models
-from django.db.models import When, Case, Count, Value
 
 
 class Department(models.Model):
@@ -57,7 +56,7 @@ class Stage(models.Model):
     categories = models.ManyToManyField(Category)
     statuses = models.ManyToManyField(Status)
     departments = models.ManyToManyField(Department)
-    template_file = models.FileField('Файд шаблона', null=True, blank=True, upload_to='report_templates')
+    template_file = models.FileField('Файл шаблона', null=True, blank=True, upload_to='report_templates')
 
     class Meta:
         verbose_name = "Этап участия"
@@ -65,7 +64,6 @@ class Stage(models.Model):
 
     def __str__(self):
         return self.name
-
 
 
 class Reservist(models.Model):
@@ -86,10 +84,6 @@ class Reservist(models.Model):
     phd = models.DateField('Дата получения учёной степени', null=True, blank=True)
     hse = models.DateField('Дата начала работы в ВШЭ')
 
-    def current_stages(self):
-        return Stage.objects.filter(categories=self.category, statuses=self.status, departments=self.department)\
-            .annotate(done=Count(Case(When(reservists=self, then=Value(True))), distinct=True))\
-            .order_by('deadline')
 
     @property
     def experience(self):
