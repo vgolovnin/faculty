@@ -9,5 +9,5 @@ def index(request):
 
 
 class ReservistsViewSet(viewsets.ModelViewSet):
-    queryset = Reservist.objects.prefetch_related('stages').all()
+    queryset = Reservist.objects.prefetch_related('current_stages').all()
     serializer_class = ReservistsWebSerializer

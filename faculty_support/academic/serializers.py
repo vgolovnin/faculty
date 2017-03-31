@@ -1,5 +1,4 @@
 from .models import Reservist, Status, Stage
-from django.db.models import When, Case, Count, Value
 from rest_framework import serializers
 from django.core.urlresolvers import reverse
 import os
@@ -53,12 +52,7 @@ class ReservistsWebSerializer(ReservistsSerializer):
 
     admin_url = serializers.SerializerMethodField()
     phd = serializers.SerializerMethodField()
-    stages = serializers.SerializerMethodField()
-
-    def get_stages(self, obj):
-        queryset = Stage.objects.filter(categories=obj.category, statuses=obj.status,departments=obj.department)\
-            .annotate(done=Count(Case(When(reservists=obj, then=Value(True))), distinct=True)).order_by('deadline')
-        return StagesSerializer(queryset, many=True).data
+    stages = StagesSerializer(many=True)
 
     def get_admin_url(self, obj):
         return reverse('admin:academic_reservist_change', args=[obj.id])
@@ -73,8 +67,8 @@ class ReservistsWebSerializer(ReservistsSerializer):
         for stage_data in validated_data.pop('stages'):
             stage = Stage.objects.get(id=stage_data['id'])
             if stage_data['done']:
-                instance.stages.add(stage)
+                instance.current_stages.add(stage)
             else:
-                instance.stages.remove(stage)
+                instance.current_stages.remove(stage)
 
         return instance

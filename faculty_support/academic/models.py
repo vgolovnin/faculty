@@ -1,7 +1,7 @@
 from datetime import date
-
 from dateutil import relativedelta
 from django.db import models
+from django.db.models import When, Case, Count, Value
 
 
 class Department(models.Model):
@@ -55,7 +55,7 @@ class Stage(models.Model):
     deadline = models.DateField('Крайний срок')
     categories = models.ManyToManyField(Category, verbose_name="Конкурсные категории")
     statuses = models.ManyToManyField(Status, verbose_name="Статусы участников")
-    departments = models.ManyToManyField(Department, verbose_name="Подразделения")
+    departments = models.ManyToManyField(Department, verbose_name="Подразделения", limit_choices_to={'children': None})
     template_file = models.FileField('Шаблон отчёта', null=True, blank=True, upload_to='report_templates')
 
     class Meta:
@@ -78,7 +78,7 @@ class Reservist(models.Model):
     birthday = models.DateField('Дата рождения')
     category = models.ForeignKey(Category, null=True, verbose_name="Конкурсная категория")
     status = models.ForeignKey(Status, null=True, related_name='reservists', verbose_name="Статус участия")
-    stages = models.ManyToManyField(Stage, related_name='reservists', blank=True, editable=False)
+    current_stages = models.ManyToManyField(Stage, related_name='reservists', blank=True, editable=False)
     department = models.ForeignKey(Department, verbose_name="Подразделение", null=True)
     position = models.CharField(max_length=200, verbose_name="Должность")
     phd = models.DateField('Дата получения учёной степени', null=True, blank=True)
@@ -96,6 +96,12 @@ class Reservist(models.Model):
         if rd.months > 0:
             experience += "%d мес." % rd.months
         return experience
+
+
+    def stages(self):
+        return Stage.objects.filter(categories=self.category, statuses=self.status, departments=self.department) \
+        .annotate(done=Count(Case(When(reservists=self, then=Value(True))), distinct=True)).order_by('deadline')
+
 
     def __str__(self):
         return self.name
