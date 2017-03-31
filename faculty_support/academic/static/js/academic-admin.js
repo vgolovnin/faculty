@@ -13,8 +13,13 @@
             DateTimeShortcuts.openCalendar(calendarnum);
         }
     }
+
     $(function(){
-        $("#id_degree").change(togglePhd);
+        $("#id_degree").change(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            setTimeout(togglePhd, 500);
+        });
         togglePhd();
     });
 })(django.jQuery);
