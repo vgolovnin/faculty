@@ -53,10 +53,10 @@ class Stage(models.Model):
     name = models.CharField('Название', max_length=200)
     description = models.TextField('Описание', blank=True)
     deadline = models.DateField('Крайний срок')
-    categories = models.ManyToManyField(Category)
-    statuses = models.ManyToManyField(Status)
-    departments = models.ManyToManyField(Department)
-    template_file = models.FileField('Файл шаблона', null=True, blank=True, upload_to='report_templates')
+    categories = models.ManyToManyField(Category, verbose_name="Конкурсные категории")
+    statuses = models.ManyToManyField(Status, verbose_name="Статусы участников")
+    departments = models.ManyToManyField(Department, verbose_name="Подразделения")
+    template_file = models.FileField('Шаблон отчёта', null=True, blank=True, upload_to='report_templates')
 
     class Meta:
         verbose_name = "Этап участия"

@@ -1,16 +1,19 @@
 (function($){
-    function togglePhd(){
-        const phd = $("#id_phd").parent();
+    function togglePhd(calendar=true){
+        const phd = $("#id_phd");
         if ($("#id_degree").val() === "NO")
         {
-            phd.hide();
-            phd.parent().find(".errorlist").hide();
+            phd.val('');
+            phd.parent().hide();
+            phd.parent().parent().find(".errorlist").hide();
         }
         else
         {
-            phd.show();
-            const calendarnum = phd.find("a[id^=calendarlink]").attr("id").substr(12);
-            DateTimeShortcuts.openCalendar(calendarnum);
+            phd.parent().show();
+            if (calendar) {
+                const calendarnum = phd.parent().find("a[id^=calendarlink]").attr("id").substr(12);
+                DateTimeShortcuts.openCalendar(calendarnum);
+            }
         }
     }
 
@@ -20,6 +23,6 @@
             e.stopPropagation();
             setTimeout(togglePhd, 500);
         });
-        togglePhd();
+        togglePhd(false);
     });
 })(django.jQuery);

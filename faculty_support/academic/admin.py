@@ -30,7 +30,7 @@ class ReservistAdmin(admin.ModelAdmin):
     form = ReservistAdminForm
     fieldsets = [
         ('Личные данные', {'fields': (('name', 'personal_page'), ('email', 'birthday'), 'degree', 'phd')}),
-        ('Основное место работы', {'fields': ('position', 'department', 'hse')}),
+        ('Основное место работы', {'fields': (('position', 'department', 'hse'),)}),
         ('Участие в программе', {'fields': ('category', 'status')}),
         (None, {'fields': ('comment',)})
     ]
@@ -46,8 +46,8 @@ class StageAdmin(admin.ModelAdmin):
     }
     fieldsets = [
         (None, {'fields': (('name', 'deadline'),('description',))}),
-        ('Участники этапа', {'fields': (('statuses', 'categories', 'departments'),),
-                             'classes': ('fields-multiple',)})
+        ('Участники этапа', {'fields': (('statuses', 'categories', 'departments'),), 'classes': ('fields-multiple',)}),
+        ('Отчёты и уведомления', {'fields': ('template_file',)})
     ]
 
 
