@@ -25,6 +25,7 @@ class ReservistAdminForm(forms.ModelForm):
         return self.cleaned_data
 
 
+@admin.register(Reservist)
 class ReservistAdmin(admin.ModelAdmin):
     form = ReservistAdminForm
     fieldsets = [
@@ -35,8 +36,21 @@ class ReservistAdmin(admin.ModelAdmin):
     ]
 
 
-admin.site.register(Reservist, ReservistAdmin)
+@admin.register(Stage)
+class StageAdmin(admin.ModelAdmin):
+    class Media:
+        css = {'all': ('css/academic-admin.css',)}
+
+    formfield_overrides = {
+        models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple},
+    }
+    fieldsets = [
+        (None, {'fields': (('name', 'deadline'),('description',))}),
+        ('Участники этапа', {'fields': (('statuses', 'categories', 'departments'),),
+                             'classes': ('fields-multiple',)})
+    ]
+
+
 admin.site.register(Category)
-admin.site.register(Stage)
 admin.site.register(Status)
 admin.site.register(Department)
