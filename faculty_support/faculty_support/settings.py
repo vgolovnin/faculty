@@ -48,7 +48,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -72,10 +71,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'faculty_support.wsgi.application'
-
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.RemoteUserBackend',
-]
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
@@ -162,6 +157,10 @@ PIPELINE = {
         'foundation': {
             'source_filenames': ('foundation-sites/dist/css/foundation.css',),
             'output_filename': 'css/foundation.css'
+        },
+        'academic-admin': {
+            'source_filenames': ('css/academic-admin.css',),
+            'output_filename': 'css/academic-admin.css'
         }
     }
 }
