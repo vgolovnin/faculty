@@ -80,7 +80,7 @@
                         status_group =>
                             _.mapValues(_.groupBy(status_group, 'category'),
                                 c_group => ({
-                                    stages: c_group[0].current_stages,
+                                    stages: c_group[0].stages,
                                     reservists: c_group
                                 })
                             ));
@@ -97,7 +97,7 @@
                         <a :href="mailto(res.email)">{{ res.email }}</a></td>
                     <td><span style="font-style:italic;">{{ res.position }}</span><br/>
                     {{ res.department }}</td><td>{{ res.experience }}</td><td>{{ res.phd }}</td>
-                    <td style="width:200px;" v-for="stage in res.current_stages">
+                    <td style="width:200px;" v-for="stage in res.stages">
                         <input type="checkbox" v-model="stage.done"/>
                         <span v-if="stage.template">{{ stage.template }}</span>
                     </td></tr>`,
@@ -107,10 +107,10 @@
                     }
                 },
                 watch: {
-                    'res.current_stages':{
+                    'res.stages':{
                         handler: function () {
                             this.$http.patch(this.res.url, {
-                                'current_stages': this.res.current_stages
+                                'stages': this.res.stages
                             })
                         },
                     deep: true
