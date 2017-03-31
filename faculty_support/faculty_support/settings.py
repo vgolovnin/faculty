@@ -116,15 +116,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "..", "static")
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '..', 'bower_components'),
-    os.path.join(BASE_DIR, "..", "static"),
 ]
 
 STATICFILES_FINDERS = [
-    'pipeline.finders.FileSystemFinder',
-    'pipeline.finders.AppDirectoriesFinder',
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'pipeline.finders.CachedFileFinder',
     'pipeline.finders.PipelineFinder',
 ]
