@@ -97,11 +97,10 @@ class Reservist(models.Model):
             experience += "%d мес." % rd.months
         return experience
 
-
     def stages(self):
-        return Stage.objects.filter(categories=self.category, statuses=self.status, departments=self.department) \
-        .annotate(done=Count(Case(When(reservists=self, then=Value(True))), distinct=True)).order_by('deadline')
-
+        ss = self.category.stage_set.filter(statuses=self.status, departments=self.department)\
+            .annotate(done=Count(Case(When(reservists=self, then=Value(True))), distinct=True)).order_by('deadline')
+        return ss
 
     def __str__(self):
         return self.name

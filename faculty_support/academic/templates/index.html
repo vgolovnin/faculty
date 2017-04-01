@@ -41,7 +41,7 @@
                 <th style="width:150px;">Стаж</th>
                 <th style="width:150px;">Учёная степень</th>
                 <th v-for="stage in table.stages">
-                    {{ stage.name }} <br/>
+                    <a :href="stage.admin_url">{{ stage.name }}</a><br/>
                     <span style="font-style: italic;">{{ stage.deadline }}</span>
                 </th>
                 </thead>

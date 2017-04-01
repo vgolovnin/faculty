@@ -31,7 +31,7 @@ class ReservistAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Личные данные', {'fields': (('name', 'personal_page'), ('email', 'birthday'), 'degree', 'phd')}),
         ('Основное место работы', {'fields': (('position', 'department', 'hse'),)}),
-        ('Участие в программе', {'fields': ('category', 'status')}),
+        ('Участие в программе', {'fields': (('category', 'status'),)}),
         (None, {'fields': ('comment',)})
     ]
 

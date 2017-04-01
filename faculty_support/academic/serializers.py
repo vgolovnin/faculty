@@ -1,4 +1,4 @@
-from .models import Reservist, Status, Stage
+from .models import Reservist, Department, Stage
 from rest_framework import serializers
 from django.core.urlresolvers import reverse
 import os
@@ -8,17 +8,29 @@ class StagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stage
         read_only_fields = ('name', 'deadline', 'template')
-        fields = ('name', 'deadline', 'done', 'id', 'template')
+        fields = ('name', 'deadline', 'done', 'id', 'template', 'admin_url')
 
+
+    admin_url = serializers.SerializerMethodField()
     done = serializers.BooleanField()
     id = serializers.IntegerField()
     template = serializers.SerializerMethodField()
+
+    def get_admin_url(self, obj):
+        return reverse('admin:academic_stage_change', args=[obj.id])
 
     def get_template(self, obj):
         if obj.template_file:
             return os.path.basename(obj.template_file.url)
         else:
             return None
+
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ('name', 'full_name')
+
 
 
 class ReservistsSerializer(serializers.ModelSerializer):
@@ -37,7 +49,7 @@ class ReservistsTemplateSerializer(ReservistsSerializer):
         fields = ReservistsSerializer.Meta.fields +\
                  ('birthday',)
 
-    department = serializers.SlugRelatedField('full_name', read_only=True)
+    department = DepartmentSerializer()
     birthday = serializers.SerializerMethodField()
 
     def get_birthday(self, obj):
@@ -54,14 +66,18 @@ class ReservistsWebSerializer(ReservistsSerializer):
     phd = serializers.SerializerMethodField()
     stages = StagesSerializer(many=True)
 
-    def get_admin_url(self, obj):
+
+    @staticmethod
+    def get_admin_url(obj):
         return reverse('admin:academic_reservist_change', args=[obj.id])
 
-    def get_phd(self, obj):
+    @staticmethod
+    def get_phd(obj):
         if obj.phd is None:
             return "Нет"
         else:
             return "Да, получена " + obj.phd.strftime("%d.%m.%Y")
+
 
     def update(self, instance, validated_data):
         for stage_data in validated_data.pop('stages'):

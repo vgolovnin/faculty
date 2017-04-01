@@ -6,7 +6,7 @@ from rest_framework import routers
 from .views import ReservistsViewSet
 
 router = routers.DefaultRouter()
-router.register(r'reserve', ReservistsViewSet)
+router.register(r'reserve', ReservistsViewSet, base_name='reservist')
 
 
 urlpatterns = [
@@ -15,3 +15,4 @@ urlpatterns = [
     url(r'^reports/dean$', reports.make),
     url(r'^reports/stage/(?P<stage_id>[0-9]+)$', reports.make)
 ]
+

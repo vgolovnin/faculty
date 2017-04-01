@@ -12,7 +12,7 @@ from tempfile import gettempdir
 DOCX_TYPE = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 
 
-def make(request, stage_id=4):
+def make(request, stage_id=5):
     stage = Stage.objects.get(id=stage_id)
     reservists = stage.reservists.all()
     context = {
