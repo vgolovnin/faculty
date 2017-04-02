@@ -32,11 +32,10 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ('name', 'full_name')
 
 
-
 class ReservistsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservist
-        fields = ('name', 'category', 'status', 'department', 'position', 'experience',)
+        fields = ('name', 'category', 'status', 'department', 'position', 'experience', 'phd')
 
     category = serializers.StringRelatedField()
     status = serializers.StringRelatedField()
@@ -51,16 +50,20 @@ class ReservistsTemplateSerializer(ReservistsSerializer):
 
     department = DepartmentSerializer()
     birthday = serializers.SerializerMethodField()
+    phd = serializers.SerializerMethodField()
 
     def get_birthday(self, obj):
         return obj.birthday.strftime("%d.%m.%Y")
+
+    def get_phd(self, obj):
+            return "Нет" if obj.phd is None else "Да"
 
 
 class ReservistsWebSerializer(ReservistsSerializer):
     class Meta:
         model = Reservist
         fields = ReservistsSerializer.Meta.fields +\
-                 ('url', 'admin_url', 'stages', 'personal_page', 'email', 'phd')
+                 ('url', 'admin_url', 'stages', 'personal_page', 'email')
 
     admin_url = serializers.SerializerMethodField()
     phd = serializers.SerializerMethodField()
