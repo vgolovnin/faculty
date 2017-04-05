@@ -1,12 +1,12 @@
 from datetime import date
 from dateutil import relativedelta
 from django.db import models
-from django.db.models import When, Case, Count, Value
 
 
 class Department(models.Model):
     name = models.CharField(max_length=200)
-    contact_info = models.TextField()
+    manager_name = models.CharField(max_length=200)
+    manager_email = models.EmailField()
     quota = models.IntegerField(default=4)
     parent = models.ForeignKey('Department', related_name='children', null=True, blank=True)
 
@@ -56,7 +56,6 @@ class Stage(models.Model):
     categories = models.ManyToManyField(Category, verbose_name="Конкурсные категории")
     statuses = models.ManyToManyField(Status, verbose_name="Статусы участников")
     departments = models.ManyToManyField(Department, verbose_name="Подразделения", limit_choices_to={'children': None})
-    template_file = models.FileField('Шаблон отчёта', null=True, blank=True, upload_to='report_templates')
 
     class Meta:
         verbose_name = "Этап участия"
@@ -64,6 +63,30 @@ class Stage(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Step(models.Model):
+    class Meta:
+        verbose_name = "Шаг"
+        verbose_name_plural = "Шаги"
+        unique_together = ('name', 'stage')
+
+    name = models.CharField(max_length=200)
+    stage = models.ForeignKey(Stage, related_name='steps')
+    template_file = models.FileField('Шаблон отчёта', null=True, blank=True, upload_to='report_templates')
+    template_consolidated = models.BooleanField()
+
+    def __str__(self):
+        return self.name
+
+
+class Participation(models.Model):
+    class Meta:
+        unique_together = ('reservist', 'stage')
+
+    reservist = models.ForeignKey('Reservist', related_name='participations')
+    stage = models.ForeignKey('Stage')
+    step = models.ForeignKey('Step')
 
 
 class Reservist(models.Model):
@@ -78,7 +101,8 @@ class Reservist(models.Model):
     birthday = models.DateField('Дата рождения')
     category = models.ForeignKey(Category, null=True, verbose_name="Конкурсная категория")
     status = models.ForeignKey(Status, null=True, related_name='reservists', verbose_name="Статус участия")
-    current_stages = models.ManyToManyField(Stage, related_name='reservists', blank=True, editable=False)
+    steps = models.ManyToManyField(Step, through=Participation, related_name='reservists')
+    stages = models.ManyToManyField(Stage, through=Participation)
     department = models.ForeignKey(Department, verbose_name="Подразделение", null=True)
     position = models.CharField(max_length=200, verbose_name="Должность")
     phd = models.DateField('Дата получения учёной степени', null=True, blank=True)
@@ -96,11 +120,6 @@ class Reservist(models.Model):
         if rd.months > 0:
             experience += "%d мес." % rd.months
         return experience
-
-    def stages(self):
-        ss = self.category.stage_set.filter(statuses=self.status, departments=self.department)\
-            .annotate(done=Count(Case(When(reservists=self, then=Value(True))), distinct=True)).order_by('deadline')
-        return ss
 
     def __str__(self):
         return self.name

@@ -35,6 +35,18 @@ class ReservistAdmin(admin.ModelAdmin):
         (None, {'fields': ('comment',)})
     ]
 
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        current_stages = obj.category.stage_set.filter(statuses=obj.status, departments=obj.department).distinct()\
+            .order_by('deadline').all()
+        for stage in current_stages:
+            Participation.objects.get_or_create(reservist=obj, stage=stage,
+                                                   defaults={'step': stage.steps.first()})
+
+class StepAdminInline(admin.TabularInline):
+    model = Step
+    fields = ('name', 'template_file', 'template_consolidated')
+    min_num = 2
 
 @admin.register(Stage)
 class StageAdmin(admin.ModelAdmin):
@@ -44,10 +56,13 @@ class StageAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple},
     }
+
+    inlines = (StepAdminInline,)
+
     fieldsets = [
-        (None, {'fields': (('name', 'deadline'),('description',))}),
+        (None, {'fields': (('name', 'deadline'), ('description',))}),
         ('Участники этапа', {'fields': (('statuses', 'categories', 'departments'),), 'classes': ('fields-multiple',)}),
-        ('Отчёты и уведомления', {'fields': ('template_file',)})
+        # ('Шаги', {'fields': ('steps',)})
     ]
 
 
