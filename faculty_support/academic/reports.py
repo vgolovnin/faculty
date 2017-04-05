@@ -31,7 +31,7 @@ def make(request, step_id=10):
         return HttpResponse("{'error': 'XMLSyntaxError', 'description':" +
                             "'Возникла проблема при обработке шаблона'}")
     else:
-        FILENAME = 'report.docx'
+        FILENAME = 'report' + str(id) +'.docx'
         FILEDIR = gettempdir()
         report.save(FILEDIR + '/' + FILENAME)
         return serve(request, FILENAME, FILEDIR)
