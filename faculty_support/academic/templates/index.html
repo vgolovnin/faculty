@@ -40,9 +40,9 @@
                 <th style="width:200px;">Должность</th>
                 <th style="width:150px;">Стаж</th>
                 <th style="width:150px;">Учёная степень</th>
-                <th v-for="stage in table.stages">
-                    {{ stage.name }} <br/>
-                    <span style="font-style: italic;">{{ stage.deadline }}</span>
+                <th v-for="pstage in table.participations">
+                    <a :href="pstage.stage.admin_url">{{ pstage.stage.name }}</a><br/>
+                    <span style="font-style: italic;">{{ pstage.stage.deadline }}</span>
                 </th>
                 </thead>
                 <tr is="reservist-row" v-for="r in table.reservists" :res="r" :key="r.url"></tr>
@@ -80,7 +80,7 @@
                         status_group =>
                             _.mapValues(_.groupBy(status_group, 'category'),
                                 c_group => ({
-                                    stages: c_group[0].current_stages,
+                                    participations: c_group[0].participations,
                                     reservists: c_group
                                 })
                             ));
@@ -97,9 +97,10 @@
                         <a :href="mailto(res.email)">{{ res.email }}</a></td>
                     <td><span style="font-style:italic;">{{ res.position }}</span><br/>
                     {{ res.department }}</td><td>{{ res.experience }}</td><td>{{ res.phd }}</td>
-                    <td style="width:200px;" v-for="stage in res.current_stages">
-                        <input type="checkbox" v-model="stage.done"/>
-                        <span v-if="stage.template">{{ stage.template }}</span>
+                    <td style="width:200px;" v-for="pstage in res.participations">
+                        <select v-model="pstage.step_selected">
+                            <option v-for="step in pstage.stage.steps" :value="step.id">{{ step.name }}</option>
+                        </select>
                     </td></tr>`,
                 methods: {
                     mailto(email){
@@ -107,10 +108,10 @@
                     }
                 },
                 watch: {
-                    'res.current_stages':{
+                    'res.participations':{
                         handler: function () {
                             this.$http.patch(this.res.url, {
-                                'current_stages': this.res.current_stages
+                                'participations': this.res.participations
                             })
                         },
                     deep: true

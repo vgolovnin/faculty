@@ -1,31 +1,39 @@
-from .models import Reservist, Status, Stage
-
+from .models import Reservist, Department, Stage, Step, Participation
 from rest_framework import serializers
 from django.core.urlresolvers import reverse
 import os
 
 
+class StepsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Step
+        fields = ('id', 'name')
+
+
 class StagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stage
-        read_only_fields = ('name', 'deadline', 'template')
-        fields = ('name', 'deadline', 'done', 'id', 'template')
+        read_only_fields = ('name', 'deadline', 'admin_url', 'steps')
+        fields = ('name', 'deadline', 'id', 'admin_url', 'steps')
 
-    done = serializers.BooleanField()
+    steps = StepsSerializer(many=True, read_only=True)
+    admin_url = serializers.SerializerMethodField()
     id = serializers.IntegerField()
-    template = serializers.SerializerMethodField()
 
-    def get_template(self, obj):
-        if obj.template_file:
-            return os.path.basename(obj.template_file.url)
-        else:
-            return None
+    def get_admin_url(self, obj):
+        return reverse('admin:academic_stage_change', args=[obj.id])
+
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ('name', 'full_name')
 
 
 class ReservistsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservist
-        fields = ('name', 'category', 'status', 'department', 'position', 'experience',)
+        fields = ('name', 'category', 'status', 'department', 'position', 'experience', 'phd')
 
     category = serializers.StringRelatedField()
     status = serializers.StringRelatedField()
@@ -38,39 +46,52 @@ class ReservistsTemplateSerializer(ReservistsSerializer):
         fields = ReservistsSerializer.Meta.fields +\
                  ('birthday',)
 
-    department = serializers.SlugRelatedField('full_name', read_only=True)
+    department = DepartmentSerializer()
     birthday = serializers.SerializerMethodField()
+    phd = serializers.SerializerMethodField()
 
     def get_birthday(self, obj):
         return obj.birthday.strftime("%d.%m.%Y")
 
+    def get_phd(self, obj):
+            return "Нет" if obj.phd is None else "Да"
+
+class ParticipationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Participation
+        fields = ('stage', 'step_selected')
+
+    stage = StagesSerializer()
+    step_selected = serializers.PrimaryKeyRelatedField(source='step', queryset=Step.objects.all())
 
 class ReservistsWebSerializer(ReservistsSerializer):
     class Meta:
         model = Reservist
         fields = ReservistsSerializer.Meta.fields +\
-                 ('url', 'admin_url', 'current_stages', 'personal_page', 'email', 'phd')
+                 ('url', 'admin_url', 'personal_page', 'email', 'participations')
 
     admin_url = serializers.SerializerMethodField()
     phd = serializers.SerializerMethodField()
-    current_stages = StagesSerializer(many=True)
+    participations = ParticipationSerializer(many=True)
 
-    def get_admin_url(self, obj):
+
+    @staticmethod
+    def get_admin_url(obj):
         return reverse('admin:academic_reservist_change', args=[obj.id])
 
-    def get_phd(self, obj):
+    @staticmethod
+    def get_phd(obj):
         if obj.phd is None:
             return "Нет"
         else:
             return "Да, получена " + obj.phd.strftime("%d.%m.%Y")
 
-    def update(self, instance, validated_data):
-        for stage_data in validated_data.pop('current_stages'):
-            stage = Stage.objects.get(id=stage_data['id'])
-            print(stage)
-            if stage_data['done']:
-                instance.stages.add(stage)
-            else:
-                instance.stages.remove(stage)
+    def update(self, instance, validated_data): # todo validate
+        for participation_data in validated_data.pop('participations'):
+            print(participation_data)
+            p = Participation.objects.get(reservist=instance,
+                                          stage=Stage.objects.get(id=participation_data['stage']['id']))
+            p.step = participation_data['step']
+            p.save()
 
         return instance

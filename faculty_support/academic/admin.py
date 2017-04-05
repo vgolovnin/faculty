@@ -25,18 +25,47 @@ class ReservistAdminForm(forms.ModelForm):
         return self.cleaned_data
 
 
+@admin.register(Reservist)
 class ReservistAdmin(admin.ModelAdmin):
     form = ReservistAdminForm
     fieldsets = [
         ('Личные данные', {'fields': (('name', 'personal_page'), ('email', 'birthday'), 'degree', 'phd')}),
-        ('Основное место работы', {'fields': ('position', 'department', 'hse')}),
-        ('Участие в программе', {'fields': ('category', 'status')}),
+        ('Основное место работы', {'fields': (('position', 'department', 'hse'),)}),
+        ('Участие в программе', {'fields': (('category', 'status'),)}),
         (None, {'fields': ('comment',)})
     ]
 
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        current_stages = obj.category.stage_set.filter(statuses=obj.status, departments=obj.department).distinct()\
+            .order_by('deadline').all()
+        for stage in current_stages:
+            Participation.objects.get_or_create(reservist=obj, stage=stage,
+                                                   defaults={'step': stage.steps.first()})
 
-admin.site.register(Reservist, ReservistAdmin)
+class StepAdminInline(admin.TabularInline):
+    model = Step
+    fields = ('name', 'template_file', 'template_consolidated')
+    min_num = 2
+
+@admin.register(Stage)
+class StageAdmin(admin.ModelAdmin):
+    class Media:
+        css = {'all': ('css/academic-admin.css',)}
+
+    formfield_overrides = {
+        models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple},
+    }
+
+    inlines = (StepAdminInline,)
+
+    fieldsets = [
+        (None, {'fields': (('name', 'deadline'), ('description',))}),
+        ('Участники этапа', {'fields': (('statuses', 'categories', 'departments'),), 'classes': ('fields-multiple',)}),
+        # ('Шаги', {'fields': ('steps',)})
+    ]
+
+
 admin.site.register(Category)
-admin.site.register(Stage)
 admin.site.register(Status)
 admin.site.register(Department)
