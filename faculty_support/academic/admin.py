@@ -65,7 +65,7 @@ class StageAdmin(admin.ModelAdmin):
         # ('Шаги', {'fields': ('steps',)})
     ]
 
-
+admin.site.register(Position)
 admin.site.register(Category)
 admin.site.register(Status)
 admin.site.register(Department)

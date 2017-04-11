@@ -64,6 +64,8 @@ class Stage(models.Model):
     def __str__(self):
         return self.name
 
+# RTL_DIR = '/home/andrey/faculty/faculty_support/report_templates'
+RTL_DIR = 'report_templates'
 
 class Step(models.Model):
     class Meta:
@@ -73,7 +75,7 @@ class Step(models.Model):
 
     name = models.CharField(max_length=200)
     stage = models.ForeignKey(Stage, related_name='steps')
-    template_file = models.FileField('Шаблон отчёта', null=True, blank=True, upload_to='report_templates')
+    template_file = models.FileField('Шаблон отчёта', null=True, blank=True, upload_to=RTL_DIR)
     template_consolidated = models.BooleanField()
 
     def __str__(self):
@@ -87,6 +89,13 @@ class Participation(models.Model):
     reservist = models.ForeignKey('Reservist', related_name='participations')
     stage = models.ForeignKey('Stage')
     step = models.ForeignKey('Step')
+
+
+class Position(models.Model):
+    name = models.CharField(max_length=200, verbose_name='Должность')
+
+    def __str__(self):
+        return self.name
 
 
 class Reservist(models.Model):
@@ -104,7 +113,7 @@ class Reservist(models.Model):
     steps = models.ManyToManyField(Step, through=Participation, related_name='reservists')
     stages = models.ManyToManyField(Stage, through=Participation)
     department = models.ForeignKey(Department, verbose_name="Подразделение", null=True)
-    position = models.CharField(max_length=200, verbose_name="Должность")
+    position = models.ForeignKey(Position)
     phd = models.DateField('Дата получения учёной степени', null=True, blank=True)
     hse = models.DateField('Дата начала работы в ВШЭ')
 

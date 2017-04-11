@@ -38,6 +38,7 @@ class ReservistsSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField()
     status = serializers.StringRelatedField()
     department = serializers.StringRelatedField()
+    position = serializers.StringRelatedField()
 
 
 class ReservistsTemplateSerializer(ReservistsSerializer):
