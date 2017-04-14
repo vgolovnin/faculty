@@ -1,7 +1,9 @@
-from .models import Reservist, Department, Stage, Step, Participation
+from .models import Reservist, Department, Stage, Status, Step, Participation, DateRequirment, ReportTemplate
 from rest_framework import serializers
 from django.core.urlresolvers import reverse
-import os
+from django.db.models import Q
+from datetime import date, datetime
+from dateutil import relativedelta
 
 
 class StepsSerializer(serializers.ModelSerializer):
@@ -9,16 +11,29 @@ class StepsSerializer(serializers.ModelSerializer):
         model = Step
         fields = ('id', 'name')
 
+class StatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Status
+        fields = ('name', 'description')
+
 
 class StagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stage
-        read_only_fields = ('name', 'deadline', 'admin_url', 'steps')
-        fields = ('name', 'deadline', 'id', 'admin_url', 'steps')
+        read_only_fields = ('name', 'deadline', 'admin_url', 'steps', 'stagename', 'warning')
+        fields = ('name', 'deadline', 'id', 'admin_url', 'steps', 'stagename', 'warning')
 
     steps = StepsSerializer(many=True, read_only=True)
     admin_url = serializers.SerializerMethodField()
     id = serializers.IntegerField()
+    name = serializers.SerializerMethodField()
+    warning = serializers.SerializerMethodField()
+
+    def get_warning(self, obj):
+        return not (obj.reminder is None or (date.today() - obj.deadline) < obj.reminder)
+
+    def get_name(self, obj):
+        return obj.stageset.name
 
     def get_admin_url(self, obj):
         return reverse('admin:academic_stage_change', args=[obj.id])
@@ -45,17 +60,23 @@ class ReservistsTemplateSerializer(ReservistsSerializer):
     class Meta:
         model = Reservist
         fields = ReservistsSerializer.Meta.fields +\
-                 ('birthday',)
+                 ('birthday', 'step')
 
     department = DepartmentSerializer()
     birthday = serializers.SerializerMethodField()
     phd = serializers.SerializerMethodField()
+    status = StatusSerializer()
+    step = serializers.SerializerMethodField()
+
+    def get_step(self, obj):
+        return Participation.objects.get(reservist=obj, stage=self.context['stage']).step.name
 
     def get_birthday(self, obj):
         return obj.birthday.strftime("%d.%m.%Y")
 
     def get_phd(self, obj):
-            return "Нет" if obj.phd is None else "Да"
+            return obj.degree.name if obj.degree is not None else "Нет"
+
 
 class ParticipationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,16 +86,32 @@ class ParticipationSerializer(serializers.ModelSerializer):
     stage = StagesSerializer()
     step_selected = serializers.PrimaryKeyRelatedField(source='step', queryset=Step.objects.all())
 
+
 class ReservistsWebSerializer(ReservistsSerializer):
     class Meta:
         model = Reservist
         fields = ReservistsSerializer.Meta.fields +\
-                 ('url', 'admin_url', 'personal_page', 'email', 'participations')
+                 ('id', 'url', 'admin_url', 'personal_page', 'email', 'participations', 'warnings', 'age')
 
     admin_url = serializers.SerializerMethodField()
     phd = serializers.SerializerMethodField()
     participations = ParticipationSerializer(many=True)
+    warnings = serializers.SerializerMethodField()
 
+    @staticmethod
+    def get_warnings(obj):
+        datereq = DateRequirment.objects.filter(stage__reservist=obj)
+        phdreq = datereq.filter(field='phd')
+        dept = obj.department
+        return {
+            'department': dept.reservists.count() > dept.quota,
+            'hse': datereq.filter(Q(field='hse') & (Q(threshold_min__gte=obj.hse) |
+                                                    Q(threshold_max__lte=obj.hse))).count() > 0,
+            'phd': phdreq.count() > 0 and (obj.degree is None or phdreq.filter(Q(threshold_min__gte=obj.phd) |
+                                                    Q(threshold_max__lte=obj.phd)).count() > 0),
+            'age': datereq.filter(Q(field='bth') & (Q(threshold_min__gte=obj.birthday) |
+                                                    Q(threshold_max__lte=obj.birthday))).count() > 0,
+        }
 
     @staticmethod
     def get_admin_url(obj):
@@ -82,10 +119,10 @@ class ReservistsWebSerializer(ReservistsSerializer):
 
     @staticmethod
     def get_phd(obj):
-        if obj.phd is None:
+        if obj.degree is None:
             return "Нет"
         else:
-            return "Да, получена " + obj.phd.strftime("%d.%m.%Y")
+            return obj.degree.short_name + " (" + obj.phd.strftime("%d.%m.%Y") + ")"
 
     def update(self, instance, validated_data): # todo validate
         for participation_data in validated_data.pop('participations'):
@@ -96,3 +133,28 @@ class ReservistsWebSerializer(ReservistsSerializer):
             p.save()
 
         return instance
+
+
+class TemplatesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReportTemplate
+        fields = ('id', 'name')
+
+class ReportsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stage
+        fields = ('url', 'name', 'stagename', 'templates')
+
+    url = serializers.SerializerMethodField()
+    stagename = serializers.SerializerMethodField()
+    templates = serializers.SerializerMethodField()
+
+    def get_templates(self, obj):
+        serializer = TemplatesSerializer(obj.stageset.templates, many=True)
+        return serializer.data
+
+    def get_url(self, obj):
+        return "/reports/stage/" + str(obj.id)
+
+    def get_stagename(self, obj):
+        return obj.stagename

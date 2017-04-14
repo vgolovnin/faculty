@@ -1,7 +1,7 @@
 (function($){
     function togglePhd(calendar=true){
         const phd = $("#id_phd");
-        if ($("#id_degree").val() === "NO")
+        if ($("#id_degree").val() == "")
         {
             phd.val('');
             phd.parent().hide();

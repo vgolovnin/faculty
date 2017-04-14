@@ -14,13 +14,12 @@ class ReservistAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ReservistAdminForm, self).__init__(*args, **kwargs)
-        if self.instance.phd is not None:
-            self.initial['degree'] = 'PHD'
+        self.fields['degree'].empty_label = "Нет"
 
-    degree = forms.ChoiceField((('NO', 'Нет'), ('PHD', 'PHD/Кандидат наук'),), label='Учёная степень')
 
     def clean(self):
-        if self.cleaned_data.get('degree') == 'PHD' and self.cleaned_data.get('phd') is None:
+        print("A=", self.cleaned_data.get('degree'))
+        if (self.cleaned_data.get('degree') is not None) and self.cleaned_data.get('phd') is None:
             raise forms.ValidationError({'phd': "Это поле обязательно."})
         return self.cleaned_data
 
@@ -37,16 +36,22 @@ class ReservistAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         obj.save()
-        current_stages = obj.category.stage_set.filter(statuses=obj.status, departments=obj.department).distinct()\
-            .order_by('deadline').all()
-        for stage in current_stages:
-            Participation.objects.get_or_create(reservist=obj, stage=stage,
-                                                   defaults={'step': stage.steps.first()})
+        obj.update_participation()
+
 
 class StepAdminInline(admin.TabularInline):
     model = Step
-    fields = ('name', 'template_file', 'template_consolidated')
+    fields = ('name', )
     min_num = 2
+
+class DateRequirmentAdminInline(admin.TabularInline):
+    model = DateRequirment
+    fields = ('field', 'threshold_min', 'threshold_max')
+    max_num = 3
+
+class ReportTemplateAdminInline(admin.TabularInline):
+    model = ReportTemplate
+    fields = ('name', 'template_file')
 
 @admin.register(Stage)
 class StageAdmin(admin.ModelAdmin):
@@ -57,15 +62,30 @@ class StageAdmin(admin.ModelAdmin):
         models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple},
     }
 
-    inlines = (StepAdminInline,)
+    inlines = (DateRequirmentAdminInline, )
 
     fieldsets = [
-        (None, {'fields': (('name', 'deadline'), ('description',))}),
-        ('Участники этапа', {'fields': (('statuses', 'categories', 'departments'),), 'classes': ('fields-multiple',)}),
-        # ('Шаги', {'fields': ('steps',)})
+        (None, {'fields': ('stageset', 'stagename', 'deadline', 'reminder')}),
+        ('Участники этапа', {'fields': (('categories', 'departments'),), 'classes': ('fields-multiple',)}),
+        ('Данные шаблона', {'fields': (('name_by', 'name_to'), ('manager_position', 'manager_signature')) ,
+                            'classes': ('collapse',)})
     ]
 
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        # TODO
+        reservists = Reservist.objects.all()
+        for res in reservists:
+            res.update_participation()
+
+
+@admin.register(StageSet)
+class StageSetAdmin(admin.ModelAdmin):
+    inlines = (StepAdminInline, ReportTemplateAdminInline)
+
+
 admin.site.register(Position)
+admin.site.register(Degree)
 admin.site.register(Category)
 admin.site.register(Status)
 admin.site.register(Department)

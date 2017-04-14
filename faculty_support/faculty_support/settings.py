@@ -156,7 +156,7 @@ PIPELINE = {
     },
     'STYLESHEETS': {
         'foundation': {
-            'source_filenames': ('foundation-sites/dist/css/foundation.css',),
+            'source_filenames': ('foundation-sites/dist/css/foundation.css', 'css/foundation-icons.css'),
             'output_filename': 'css/foundation.css'
         },
         'academic-admin': {
@@ -172,3 +172,5 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

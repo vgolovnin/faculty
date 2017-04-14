@@ -7,11 +7,19 @@ from .serializers import *
 def index(request):
     return render(request, 'index.html')
 
+def reports(request):
+    return render(request, 'reports.html')
+
 
 class ReservistsViewSet(viewsets.ModelViewSet):
     serializer_class = ReservistsWebSerializer
 
     def get_queryset(self, pk=None):
-        queryset = Reservist.objects.select_related('category', 'status', 'department').all()
-            #.prefetch_related('category__stage_set', 'status__stage_set', 'department__stage_set').all()
+        queryset = Reservist.objects.filter(category__isnull=False).select_related('category', 'status', 'department').all()
         return queryset
+
+
+class ReportsViewSet(viewsets.ModelViewSet):
+    serializer_class = ReportsSerializer
+    queryset = Stage.objects.all()
+
