@@ -2,14 +2,14 @@ from .models import Reservist, Department, Stage, Status, Step, Participation, D
 from rest_framework import serializers
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from datetime import date, datetime
-from dateutil import relativedelta
+from datetime import date
 
 
 class StepsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Step
         fields = ('id', 'name')
+
 
 class StatusSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,7 +36,8 @@ class StagesSerializer(serializers.ModelSerializer):
         return obj.stageset.name
 
     def get_admin_url(self, obj):
-        return reverse('admin:academic_stage_change', args=[obj.id])
+        return reverse('admin:academic_stage_change', args=[obj.id]) \
+        if self.context['request'].user.has_perm('academic.change_stage') else None
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -81,10 +82,14 @@ class ReservistsTemplateSerializer(ReservistsSerializer):
 class ParticipationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participation
-        fields = ('stage', 'step_selected')
+        fields = ('stage', 'step_selected', 'disabled')
 
+    disabled = serializers.SerializerMethodField()
     stage = StagesSerializer()
     step_selected = serializers.PrimaryKeyRelatedField(source='step', queryset=Step.objects.all())
+
+    def get_disabled(self, obj):
+        return not self.context['request'].user.is_authenticated()
 
 
 class ReservistsWebSerializer(ReservistsSerializer):
@@ -104,7 +109,7 @@ class ReservistsWebSerializer(ReservistsSerializer):
         phdreq = datereq.filter(field='phd')
         dept = obj.department
         return {
-            'department': dept.reservists.count() > dept.quota,
+            'department': dept.reservists.filter(category__is_quoted=True).count() > dept.quota,
             'hse': datereq.filter(Q(field='hse') & (Q(threshold_min__gte=obj.hse) |
                                                     Q(threshold_max__lte=obj.hse))).count() > 0,
             'phd': phdreq.count() > 0 and (obj.degree is None or phdreq.filter(Q(threshold_min__gte=obj.phd) |
@@ -126,7 +131,6 @@ class ReservistsWebSerializer(ReservistsSerializer):
 
     def update(self, instance, validated_data): # todo validate
         for participation_data in validated_data.pop('participations'):
-            print(participation_data)
             p = Participation.objects.get(reservist=instance,
                                           stage=Stage.objects.get(id=participation_data['stage']['id']))
             p.step = participation_data['step']
@@ -140,14 +144,16 @@ class TemplatesSerializer(serializers.ModelSerializer):
         model = ReportTemplate
         fields = ('id', 'name')
 
+
 class ReportsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stage
-        fields = ('url', 'name', 'stagename', 'templates')
+        fields = ('stageset', 'url', 'name', 'stagename', 'templates')
 
     url = serializers.SerializerMethodField()
     stagename = serializers.SerializerMethodField()
     templates = serializers.SerializerMethodField()
+    stageset = serializers.PrimaryKeyRelatedField(read_only=True)
 
     def get_templates(self, obj):
         serializer = TemplatesSerializer(obj.stageset.templates, many=True)

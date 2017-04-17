@@ -1,5 +1,4 @@
 from django.http import HttpResponse
-from django.utils.encoding import smart_str
 from django.views.static import serve
 from jinja2 import TemplateSyntaxError
 

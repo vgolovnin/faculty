@@ -1,6 +1,9 @@
 from django import forms
 from django.contrib import admin
+
 from .models import *
+
+admin.site.site_header = 'Академический кадровый резерв'
 
 
 class ReservistAdminForm(forms.ModelForm):
@@ -15,7 +18,6 @@ class ReservistAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ReservistAdminForm, self).__init__(*args, **kwargs)
         self.fields['degree'].empty_label = "Нет"
-
 
     def clean(self):
         print("A=", self.cleaned_data.get('degree'))
@@ -44,10 +46,12 @@ class StepAdminInline(admin.TabularInline):
     fields = ('name', )
     min_num = 2
 
+
 class DateRequirmentAdminInline(admin.TabularInline):
     model = DateRequirment
     fields = ('field', 'threshold_min', 'threshold_max')
     max_num = 3
+
 
 class ReportTemplateAdminInline(admin.TabularInline):
     model = ReportTemplate
@@ -73,7 +77,6 @@ class StageAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         obj.save()
-        # TODO
         reservists = Reservist.objects.all()
         for res in reservists:
             res.update_participation()

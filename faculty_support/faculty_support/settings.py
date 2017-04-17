@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 from os.path import dirname
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -138,6 +139,16 @@ PIPELINE = {
     'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     'JAVASCRIPT': {
+        'main': {
+            'source_filenames': (
+                'js-cookie/src/js.cookie.js',
+                'js/main.js'
+            ),
+            'output_filename': 'js/main.js',
+            'extra_context': {
+                'defer': True
+            }
+        },
         'vue': {
             'source_filenames': (
                 'vue/dist/vue.js',
@@ -155,6 +166,10 @@ PIPELINE = {
         }
     },
     'STYLESHEETS': {
+        'main':{
+          'source_filenames': ('css/main.css',),
+          'output_filename': 'css/main.css'
+        },
         'foundation': {
             'source_filenames': ('foundation-sites/dist/css/foundation.css', 'css/foundation-icons.css'),
             'output_filename': 'css/foundation.css'
@@ -167,9 +182,8 @@ PIPELINE = {
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+         'rest_framework.permissions.DjangoModelPermissions',
     ],
 }
 

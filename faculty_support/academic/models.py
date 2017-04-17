@@ -1,14 +1,12 @@
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from dateutil import relativedelta
 from django.db import models
 
 
 class Department(models.Model):
-    name = models.CharField(max_length=200)
-    manager_name = models.CharField(max_length=200)
-    manager_email = models.EmailField()
-    quota = models.IntegerField(default=4)
-    parent = models.ForeignKey('Department', related_name='children', null=True, blank=True)
+    name = models.CharField('Название', max_length=200)
+    quota = models.IntegerField(default=4, verbose_name="Квота на участие")
+    parent = models.ForeignKey('Department', verbose_name="Вышестоящее подразделение", related_name='children', null=True, blank=True)
 
     class Meta:
         verbose_name = "Подразделение"
@@ -28,6 +26,7 @@ class Department(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField('Описание', blank=True)
+    is_quoted = models.BooleanField('Квотирование участников', default=True)
 
     class Meta:
         verbose_name = "Конкурсная категория"
@@ -49,19 +48,21 @@ class Status(models.Model):
         return self.name
 
 DATE_CHOICE = (
-    ('hse', "Начало работы"),
-    ('phd', "Присвоение учёной степени"),
-    ('bth', "Рождение")
+    ('hse', "Дата начала работы"),
+    ('phd', "Дата присвоения учёной степени"),
+    ('bth', "Дата рождения")
 )
 
 
 class DateRequirment(models.Model):
     class Meta:
         unique_together = ('field', 'stage')
+        verbose_name = "Формальное требование"
+        verbose_name_plural = "Формальные требования"
 
-    field = models.CharField(max_length=3, choices=DATE_CHOICE, verbose_name="Дата")
-    threshold_min = models.DateField(null=True, blank=True)
-    threshold_max = models.DateField(null=True, blank=True)
+    field = models.CharField(max_length=3, choices=DATE_CHOICE, verbose_name="Тип")
+    threshold_min = models.DateField(null=True, blank=True, verbose_name="Минимум")
+    threshold_max = models.DateField(null=True, blank=True, verbose_name="Максимум")
     stage = models.ForeignKey('Stage')
 
 
@@ -79,6 +80,11 @@ class StageSet(models.Model):
 
 
 class Stage(models.Model):
+    class Meta:
+        verbose_name = "Этап участия"
+        verbose_name_plural = "Этапы участия"
+        ordering = ('deadline',)
+
     stageset = models.ForeignKey(StageSet)
     stagename = models.CharField(max_length=200)
     deadline = models.DateField('Крайний срок')
@@ -90,10 +96,6 @@ class Stage(models.Model):
     name_to = models.CharField(max_length=200, blank=True)
     manager_position = models.CharField(max_length=200, blank=True)
     manager_signature = models.CharField(max_length=200, blank=True)
-
-    class Meta:
-        verbose_name = "Этап участия"
-        verbose_name_plural = "Этапы участия"
 
     @property
     def statuses(self):
@@ -113,9 +115,17 @@ class Stage(models.Model):
 # RTL_DIR = '/home/andrey/faculty/faculty_support/report_templates'
 RTL_DIR = 'report_templates'  # todo BASE_DIR
 
+
 class ReportTemplate(models.Model):
-    name = models.CharField(max_length=200)
-    template_file = models.FileField('Шаблон отчёта', null=True, blank=True, upload_to=RTL_DIR)
+    class Meta:
+        verbose_name = "Шаблон отчёта"
+        verbose_name_plural = "Шаблоны отчётов"
+        permissions = (
+            ('reports', "Can make reports"),
+        )
+
+    name = models.CharField(max_length=200, verbose_name="Название")
+    template_file = models.FileField('Файл шаблона', null=True, blank=True, upload_to=RTL_DIR)
     stageset = models.ForeignKey(StageSet, related_name='templates')
 
     def __str__(self):
@@ -182,8 +192,8 @@ class Reservist(models.Model):
     steps = models.ManyToManyField(Step, through=Participation, related_name='reservists')
     stages = models.ManyToManyField(Stage, through=Participation)
     department = models.ForeignKey(Department, related_name='reservists', verbose_name="Подразделение", null=True)
-    position = models.ForeignKey(Position)
-    degree = models.ForeignKey(Degree, null=True, blank=True, default=None)
+    position = models.ForeignKey(Position, verbose_name="Должность")
+    degree = models.ForeignKey(Degree, null=True, blank=True, default=None, verbose_name="Учёная степень")
     phd = models.DateField('Дата получения учёной степени', null=True, blank=True)
     hse = models.DateField('Дата начала работы в ВШЭ')
 

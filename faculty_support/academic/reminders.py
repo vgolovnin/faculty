@@ -8,10 +8,7 @@ MAIL_TEMPLATE = """
 У Вас не готова {{ stage }}.
 Заполните, пожалуйста, до {{ deadline }}
 
--- Sincerely Yours, Leonid W. Dworzanski.
-Coordinator of High Potential group of Faculty of Computer Science
-National Research University Higher School of Economics
-mailto: leo@mathtech.ru
+{{ signature }}
 """
 
 MAIL_FROM = "leo@mathtech.ru"
@@ -20,8 +17,10 @@ MAIL_FROM = "leo@mathtech.ru"
 def mail(request, reservist_id, stage_id):
     reservist = Reservist.objects.get(id=reservist_id)
     stage = Stage.objects.get(id=stage_id)
-    send_mail("Напоминание от академического резерва", Template(MAIL_TEMPLATE).render(Context(
+    with open('email_templates/signature.txt', 'rt') as signature:
+        send_mail("Напоминание от академического резерва", Template(MAIL_TEMPLATE).render(Context(
         {'name': ' '.join(reservist.name.split()[1:]),
          'stage': stage.stageset.name,
-         'deadline': stage.deadline })), MAIL_FROM, (reservist.email,))
+         'deadline': stage.deadline,
+         'signature': ''.join(signature.readlines())})), MAIL_FROM, (reservist.email,))
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
