@@ -1,0 +1,33 @@
+{% load render_bundle from webpack_loader %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Академический кадровый резерв</title>
+    {% render_bundle 'main' attrs='defer' %}
+</head>
+<body>
+<nav>
+<div class="top-bar">
+  <div class="top-bar-left">
+    <ul class="dropdown menu" data-dropdown-menu>
+      <li class="menu-text">Академический кадровый резерв</li>
+      <li>
+          <span><a href="/">Участники программы</a>
+          <a href="/admin/academic/reservist/add/" class="fi-plus"></a></span>
+      </li>
+      {%  if perms.academic.reports %}
+        <li><a href="/reports">Отчёты</a></li>
+      {% endif %}
+      <li><a href="/admin/">Администрирование</a></li>
+    </ul>
+  </div>
+</div>
+</nav>
+
+<div class="app">
+    <div id="app"></div>
+</div>
+
+</body>
+</html>

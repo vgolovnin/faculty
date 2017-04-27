@@ -1,0 +1,5 @@
+ @import "~foundation-sites/dist/css/foundation.css";
+ @import "~foundation-icons/foundation-icons.css";
+
+ .app{ margin: 2% 0 0 5%;}
+ .status-header, .reports-header{margin-left: -3%;}
