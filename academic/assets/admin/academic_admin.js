@@ -1,3 +1,5 @@
+require('./academic_admin.css');
+
 (function($){
     function togglePhd(calendar=true){
         const phd = $("#id_phd");

@@ -11,7 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "faculty_support.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "academic.settings")
 
 application = get_wsgi_application()
 

@@ -12,8 +12,7 @@ class ReservistAdminForm(forms.ModelForm):
         fields = '__all__'
 
     class Media:
-        css = {'all': ('css/academic-admin.css',)}
-        js = ('js/academic-admin.js',)
+        js = ('academic_admin.js',)
 
     def __init__(self, *args, **kwargs):
         super(ReservistAdminForm, self).__init__(*args, **kwargs)
@@ -60,7 +59,7 @@ class ReportTemplateAdminInline(admin.TabularInline):
 @admin.register(Stage)
 class StageAdmin(admin.ModelAdmin):
     class Media:
-        css = {'all': ('css/academic-admin.css',)}
+        css = {'all': ('css/academic_admin.css',)}
 
     formfield_overrides = {
         models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple},

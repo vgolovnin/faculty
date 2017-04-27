@@ -1,6 +1,9 @@
 from datetime import date, timedelta
+
+import os
 from dateutil import relativedelta
 from django.db import models
+from .settings import BASE_DIR
 
 
 class Department(models.Model):
@@ -113,7 +116,7 @@ class Stage(models.Model):
         return self.stagename
 
 # RTL_DIR = '/home/andrey/faculty/faculty_support/report_templates'
-RTL_DIR = 'report_templates'  # todo BASE_DIR
+RTL_DIR = os.path.join(BASE_DIR, 'report_templates')  # todo BASE_DIR
 
 
 class ReportTemplate(models.Model):

@@ -10,12 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 import os
-from os.path import dirname
-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -38,7 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'pipeline',
+    'webpack_loader',
     'rest_framework',
 ]
 
@@ -52,12 +49,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'faculty_support.urls'
+ROOT_URLCONF = 'academic.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'academic', 'assets')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -70,7 +67,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'faculty_support.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
@@ -117,69 +114,29 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, "..", "static")
+STATIC_ROOT = os.path.join(BASE_DIR, "assets")
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '..', 'bower_components'),
-    os.path.join(BASE_DIR, "..", "static")
+    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, 'node_modules'),
 ]
 
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG,
+        'BUNDLE_DIR_NAME': 'static/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+        'POLL_INTERVAL': 0.1,
+        'TIMEOUT': None,
+        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+    }
+}
+#
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'pipeline.finders.CachedFileFinder',
-    'pipeline.finders.PipelineFinder',
 ]
 
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
-
-
-PIPELINE = {
-    'PIPELINE_ENABLED': True,
-    'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
-    'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
-    'JAVASCRIPT': {
-        'main': {
-            'source_filenames': (
-                'js-cookie/src/js.cookie.js',
-                'js/main.js'
-            ),
-            'output_filename': 'js/main.js',
-            'extra_context': {
-                'defer': True
-            }
-        },
-        'vue': {
-            'source_filenames': (
-                'vue/dist/vue.js',
-                'vue-resource/dist/vue-resource.js'
-            ),
-            'output_filename': 'js/vue.js'
-        },
-        'lodash': {
-            'source_filenames': ('lodash/dist/lodash.js',),
-            'output_filename': 'js/lodash.js'
-        },
-        'academic-admin': {
-            'source_filenames': ('css/academic-admin.js',),
-            'output_filename': 'css/academic-admin.js'
-        }
-    },
-    'STYLESHEETS': {
-        'main':{
-          'source_filenames': ('css/main.css',),
-          'output_filename': 'css/main.css'
-        },
-        'foundation': {
-            'source_filenames': ('foundation-sites/dist/css/foundation.css', 'css/foundation-icons.css'),
-            'output_filename': 'css/foundation.css'
-        },
-        'academic-admin': {
-            'source_filenames': ('css/academic-admin.css',),
-            'output_filename': 'css/academic-admin.css'
-        }
-    }
-}
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
