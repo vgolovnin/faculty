@@ -3,13 +3,14 @@
         <td><a :href="res.admin_url">{{ res.name }}</a>
             <a :href="res.personal_page" class="fi-web"></a>
             <a :href="mailto(res.email)" class="fi-at-sign"></a>
-            <div class="callout" v-bind:class="{alert: warnings.age}">Возраст: {{ res.age }}</div>
-            <div class="callout" v-bind:class="{alert: warnings.hse}">Стаж: {{ res.experience }}</div>
-            <div class="callout" v-bind:class="{alert: warnings.phd}">Уч. степень: {{ res.phd }}</div>
+            <div class="callout fi-results-demographics" v-bind:class="{alert: warnings.age}"> {{ res.age }}</div>
+            <div class="callout fi-home" v-bind:class="{alert: warnings.hse}"> {{ res.experience }}</div>
+            <div class="callout fi-book" v-bind:class="{alert: warnings.phd}"> {{ res.phd }}</div>
         </td>
-        <td class="callout" v-bind:class="{warning: res.warnings.department}">
+        <td class="callout">
             <span style="font-style:italic;">{{ res.position }}</span><br/>
             {{ res.department }}
+            <div class="callout warning fi-alert" v-if="warnings.department"> Квота</div>
         </td>
         <td style="width:200px;" class="callout" v-bind:class="{warning: stagewarning(pstage)}"
             v-for="pstage in datesort(res.participations)">
