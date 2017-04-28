@@ -69,6 +69,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'academic.wsgi.application'
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+FIXTURE_DIRS = [
+    os.path.join(BASE_DIR, 'academic', 'fixtures')
+]
+
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
