@@ -115,8 +115,6 @@ class Stage(models.Model):
     def __str__(self):
         return self.stagename
 
-RTL_DIR = os.path.join(BASE_DIR, 'report_templates')
-
 
 class ReportTemplate(models.Model):
     class Meta:
@@ -127,7 +125,7 @@ class ReportTemplate(models.Model):
         )
 
     name = models.CharField(max_length=200, verbose_name="Название")
-    template_file = models.FileField('Файл шаблона', null=True, blank=True, upload_to=RTL_DIR)
+    template_file = models.FileField('Файл шаблона', null=True, blank=True, upload_to='report_templates')
     stageset = models.ForeignKey(StageSet, related_name='templates')
 
     def __str__(self):
