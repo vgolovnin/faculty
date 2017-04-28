@@ -7,7 +7,8 @@ from .serializers import ReservistsTemplateSerializer
 from docxtpl import DocxTemplate
 from datetime import date
 from tempfile import gettempdir
-
+from .settings import MEDIA_ROOT
+from os import path
 
 DOCX_TYPE = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 
@@ -24,7 +25,7 @@ def make(request, stage_id, template_id):
 
     import lxml
     try:
-        report = DocxTemplate(template.template_file.url)
+        report = DocxTemplate(path.join(MEDIA_ROOT, template.template_file.url))
         report.render(context)
     except TemplateSyntaxError as e:
         return HttpResponse("{'error': '" + e.message + "', 'description':" +
