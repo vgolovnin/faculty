@@ -11,8 +11,8 @@ router.register(r'reports', ReportsViewSet, base_name='report')
 
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^reports/$', views.index, name='reports'),
+    url(r'^$', views.index),
+    url(r'^reports/$', views.index),
     url(r'^api/', include(router.urls)),
     url(r'^admin/', admin.site.urls),
     url(r'^reminders/reservist/(?P<reservist_id>[0-9]+)/stage/(?P<stage_id>[0-9]+)$', reminders.mail),

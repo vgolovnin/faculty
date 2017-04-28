@@ -13,8 +13,8 @@ Vue.http.headers.common['X-CSRFToken'] = Cookies.get('csrftoken');
 import Reserve from './vue/Reserve.vue'
 import Reports from './vue/Reports.vue'
 
-
 const router = new VueRouter({
+    base: process.env.APP_URL,
     mode: 'history',
     routes: [
     {path: '/', component: Reserve},

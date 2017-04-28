@@ -17,7 +17,7 @@ export default
         report_stages: []
     }),
     mounted: function () {
-        this.$http.get('/api/reports/').then(function (resp) {
+        this.$http.get(process.env.APP_URL + 'api/reports/').then(function (resp) {
                 this.report_stages = resp.data;
             },
             function (resp) {

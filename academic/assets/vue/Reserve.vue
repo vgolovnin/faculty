@@ -38,7 +38,7 @@
             },
         },
         mounted: function () {
-            this.$http.get('api/reserve/').then(function (resp) {
+            this.$http.get(process.env.APP_URL + 'api/reserve/').then(function (resp) {
                     this.reserve = resp.data;
                 },
                 function (resp) {

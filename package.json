@@ -1,11 +1,12 @@
 {
   "name": "faculty",
   "description": "Academic Reserve HSE",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "author": "Victor Golovnin <victor.golovnin@gmail.com>",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
+    "runserver": "python manage.py runserver",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --hot",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {

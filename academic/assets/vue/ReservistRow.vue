@@ -60,6 +60,7 @@
 </script>
 
 <style>
+
     .reservist-row td > .callout
     {
         padding: 4px 16px;
