@@ -10,7 +10,7 @@
                     <th style="width:200px;">Должность</th>
                     <th v-for="pstage in table.participations"></th>
                     </thead>
-                    <tr is="reservist-row" v-for="r in table.reservists" :res="r" :key="r.url"></tr>
+                    <tr is="reservist-row" v-for="r in table.reservists" :res="r" :warnings="r.warnings" :key="r.url"></tr>
                 </table>
             </div>
         </div>

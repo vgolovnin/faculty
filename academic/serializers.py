@@ -8,7 +8,7 @@ from datetime import date
 class StepsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Step
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'is_final')
 
 
 class StatusSerializer(serializers.ModelSerializer):

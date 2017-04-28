@@ -3,9 +3,9 @@
         <td><a :href="res.admin_url">{{ res.name }}</a>
             <a :href="res.personal_page" class="fi-web"></a>
             <a :href="mailto(res.email)" class="fi-at-sign"></a>
-            <div class="callout" v-bind:class="{alert: res.warnings.age}">Возраст: {{ res.age }}</div>
-            <div class="callout" v-bind:class="{alert: res.warnings.hse}">Стаж: {{ res.experience }}</div>
-            <div class="callout" v-bind:class="{alert: res.warnings.phd}">Уч. степень: {{ res.phd }}</div>
+            <div class="callout" v-bind:class="{alert: warnings.age}">Возраст: {{ res.age }}</div>
+            <div class="callout" v-bind:class="{alert: warnings.hse}">Стаж: {{ res.experience }}</div>
+            <div class="callout" v-bind:class="{alert: warnings.phd}">Уч. степень: {{ res.phd }}</div>
         </td>
         <td class="callout" v-bind:class="{warning: res.warnings.department}">
             <span style="font-style:italic;">{{ res.position }}</span><br/>
@@ -29,7 +29,7 @@
     export default
     {
         name: "ReservistRow",
-        props: ['res'],
+        props: ['res', 'warnings'],
         methods: {
             mailto(email){
                 return 'mailto:' + email;
@@ -39,7 +39,7 @@
             },
             stagewarning(pstage)
             {
-                return pstage.stage.warning && (pstage.step_selected == _.first(pstage.stage.steps).id);
+                return pstage.stage.warning && !_.find(pstage.stage.steps, ['id', pstage.step_selected]).is_final
             },
             reminder(res, stage)
             {

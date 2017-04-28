@@ -115,8 +115,7 @@ class Stage(models.Model):
     def __str__(self):
         return self.stagename
 
-# RTL_DIR = '/home/andrey/faculty/faculty_support/report_templates'
-RTL_DIR = os.path.join(BASE_DIR, 'report_templates')  # todo BASE_DIR
+RTL_DIR = os.path.join(BASE_DIR, 'report_templates')
 
 
 class ReportTemplate(models.Model):
@@ -134,14 +133,16 @@ class ReportTemplate(models.Model):
     def __str__(self):
         return self.name
 
+
 class Step(models.Model):
     class Meta:
         verbose_name = "Шаг"
         verbose_name_plural = "Шаги"
         unique_together = ('name', 'stageset')
 
-    name = models.CharField(max_length=200)
+    name = models.CharField('Название', max_length=200)
     stageset = models.ForeignKey(StageSet, related_name='steps')
+    is_final = models.BooleanField('Является финальным', default=False)
 
     def __str__(self):
         return self.name

@@ -42,7 +42,7 @@ class ReservistAdmin(admin.ModelAdmin):
 
 class StepAdminInline(admin.TabularInline):
     model = Step
-    fields = ('name', )
+    fields = ('name', 'is_final')
     min_num = 2
 
 
