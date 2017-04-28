@@ -69,10 +69,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'academic.wsgi.application'
 
-# AUTHENTICATION_BACKENDS = [
-#     'django.contrib.auth.backends.RemoteUserBackend',
-# ]
-
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
