@@ -2,12 +2,12 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from . import views, reports, reminders
 from rest_framework import routers
-from .views import ReservistsViewSet, ReportsViewSet
+from .views import ReportsViewSet, ParticipationsViewSet
 
 
 router = routers.DefaultRouter()
-router.register(r'reserve', ReservistsViewSet, base_name='reservist')
 router.register(r'reports', ReportsViewSet, base_name='report')
+router.register(r'participation', ParticipationsViewSet, base_name='participation')
 
 
 urlpatterns = [

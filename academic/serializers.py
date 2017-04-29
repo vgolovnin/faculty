@@ -82,25 +82,21 @@ class ReservistsTemplateSerializer(ReservistsSerializer):
 class ParticipationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participation
-        fields = ('stage', 'step_selected', 'disabled')
+        fields = ('id', 'reservist', 'stage', 'step')
 
-    disabled = serializers.SerializerMethodField()
-    stage = StagesSerializer()
-    step_selected = serializers.PrimaryKeyRelatedField(source='step', queryset=Step.objects.all())
-
-    def get_disabled(self, obj):
-        return not self.context['request'].user.is_authenticated()
+    reservist = serializers.PrimaryKeyRelatedField(read_only=True)
+    stage = serializers.PrimaryKeyRelatedField(read_only=True)
+    step = serializers.PrimaryKeyRelatedField(queryset=Step.objects.all())
 
 
 class ReservistsWebSerializer(ReservistsSerializer):
     class Meta:
         model = Reservist
         fields = ReservistsSerializer.Meta.fields +\
-                 ('id', 'url', 'admin_url', 'personal_page', 'email', 'participations', 'warnings', 'age')
+                 ('id', 'admin_url', 'personal_page', 'email', 'warnings', 'age')
 
     admin_url = serializers.SerializerMethodField()
     phd = serializers.SerializerMethodField()
-    participations = ParticipationSerializer(many=True)
     warnings = serializers.SerializerMethodField()
 
     @staticmethod

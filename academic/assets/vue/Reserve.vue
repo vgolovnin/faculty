@@ -8,9 +8,10 @@
                     <thead>
                     <th style="width:300px;">Сотрудник</th>
                     <th style="width:200px;">Должность</th>
-                    <th v-for="pstage in table.participations"></th>
+                    <th></th>
                     </thead>
-                    <tr is="reservist-row" v-for="r in table.reservists" :res="r" :warnings="r.warnings" :key="r.url"></tr>
+                    <tr is="reservist-row" v-for="r in table" :res="r"
+                        :part="filterParticipations(r)" :warnings="r.warnings" :key="r.url"></tr>
                 </table>
             </div>
         </div>
@@ -23,27 +24,35 @@
     {
         name: "ReserveTable",
         data: () => ({
-            reserve: []
+            reserve: [],
+            participations: [],
+            stages: [],
         }),
         computed: {
             groupedReserve(){
                 return _.mapValues(_.groupBy(this.reserve, 'status'),
-                    status_group =>
-                        _.mapValues(_.groupBy(status_group, 'category'),
-                            c_group => ({
-                                participations: c_group[0].participations,
-                                reservists: c_group
-                            })
-                        ));
+                    status_group => _.groupBy(status_group, 'category')
+                );
             },
         },
         mounted: function () {
-            this.$http.get(process.env.APP_URL + 'api/reserve/').then(function (resp) {
-                    this.reserve = resp.data;
+            this.$http.get(process.env.APP_URL + 'api/participation').then(function (resp) {
+                    _.assign(this, resp.data);
                 },
                 function (resp) {
                     console.log(resp);
                 });
+        },
+        methods: {
+            filterParticipations(r) {
+                return _.mapValues(_.filter(this.participations, ['reservist', r.id]),
+                    participation => ({
+                        id: participation.id,
+                        stage: _.find(this.stages, ['id', participation.stage]),
+                        step_selected: participation.step,
+                    })
+                );
+            }
         },
 
         components: {
