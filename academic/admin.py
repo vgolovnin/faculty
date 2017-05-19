@@ -35,9 +35,13 @@ class ReservistAdmin(admin.ModelAdmin):
         (None, {'fields': ('comment',)})
     ]
 
-    def save_model(self, request, obj, form, change):
-        obj.save()
-        obj.update_participation()
+    def save_related(self, request, form, formsets, change):
+        form.save_m2m()
+        for formset in formsets:
+            self.save_formset(request, form, formset, change=change)
+        reservists = Reservist.objects.all()
+        for res in reservists:
+            res.update_participation()
 
 
 class StepAdminInline(admin.TabularInline):
@@ -48,8 +52,7 @@ class StepAdminInline(admin.TabularInline):
 
 class DateRequirmentAdminInline(admin.TabularInline):
     model = DateRequirment
-    fields = ('field', 'threshold_min', 'threshold_max')
-    max_num = 3
+    fields = ('field', 'threshold_min', 'threshold_max', 'status')
 
 
 class ReportTemplateAdminInline(admin.TabularInline):
@@ -65,7 +68,6 @@ class StageAdmin(admin.ModelAdmin):
         models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple},
     }
 
-    inlines = (DateRequirmentAdminInline, )
 
     fieldsets = [
         (None, {'fields': ('stageset', 'stagename', 'deadline', 'reminder')}),
@@ -74,8 +76,10 @@ class StageAdmin(admin.ModelAdmin):
                             'classes': ('collapse',)})
     ]
 
-    def save_model(self, request, obj, form, change):
-        obj.save()
+    def save_related(self, request, form, formsets, change):
+        form.save_m2m()
+        for formset in formsets:
+            self.save_formset(request, form, formset, change=change)
         reservists = Reservist.objects.all()
         for res in reservists:
             res.update_participation()
@@ -85,9 +89,13 @@ class StageAdmin(admin.ModelAdmin):
 class StageSetAdmin(admin.ModelAdmin):
     inlines = (StepAdminInline, ReportTemplateAdminInline)
 
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    inlines = (DateRequirmentAdminInline,)
+
 
 admin.site.register(Position)
 admin.site.register(Degree)
-admin.site.register(Category)
+
 admin.site.register(Status)
 admin.site.register(Department)

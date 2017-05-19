@@ -101,7 +101,7 @@ class ReservistsWebSerializer(ReservistsSerializer):
 
     @staticmethod
     def get_warnings(obj):
-        datereq = DateRequirment.objects.filter(stage__reservist=obj)
+        datereq = DateRequirment.objects.filter(category=obj.category, status=obj.status)
         phdreq = datereq.filter(field='phd')
         dept = obj.department
         return {
