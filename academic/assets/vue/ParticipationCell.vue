@@ -1,49 +1,53 @@
 <template>
-    <td class="participation-cell callout" v-bind:class="{warning: stagewarning}">
-    <a :href="stage.admin_url">{{ stage.name }}</a>
-            <div class="fi-calendar"> {{ stage.deadline }}
-                <!--<a :href="reminder(res, participation.stage)" v-if="!participation.disabled" class="fi-mail"-->
-                   <!--onclick="return confirm('Send mail')"></a>-->
-            </div>
-            <select v-model="step_selected" :disabled="disabled">
+    <div class="reserve-cell callout" v-bind:class="{warning: stagewarning}">
+
+        <label v-if="!readonly" >
+            <a :href="stage.admin_url">{{ stage.name }}</a>
+            <select v-model="step_id" >
                 <option v-for="step in stage.steps" :value="step.id">{{ step.name }}</option>
             </select>
-    </td>
+        </label>
+        <div v-else>{{ stage.name }}
+            <h5 class="text-center">{{ step.name }}</h5></div>
+            <span class="fi-calendar float-right"> {{ stage.deadline }}
+                <a @click="reminder()" v-if="stagewarning" class="fi-mail"></a>
+            </span>
+    </div>
 </template>
 
 <script>
+    import _ from 'lodash'
     export default
     {
         name: 'participation-cell',
-        props: ['id', 'stage', 'step_default'],
+        props: ['participation', 'readonly'],
         data(){
             return {
-                disabled: false,
-                step_selected: this.step_default
+                step_id: this.participation.step_selected,
+                stage: this.participation.stage
             }
         },
         computed: {
+            step(){
+                return _.find(this.stage.steps, ['id', this.step_id]);
+            },
             stagewarning()
             {
-                return this.stage.warning &&
-                    !_.find(this.stage.steps, ['id', this.step_selected]).is_final
+                return this.stage.warning && !this.step.is_final;
             },
-//            reminder(res, stage)
-//            {
-//                return "reminders/reservist/" + res.id + "/stage/" + stage.id;
-//            },
+        },
+        methods: {
+            reminder()
+            {
+                this.$modal.show('mailer', {participation: this.participation});
+            },
         },
         watch:
             {
-                step_selected: function (step) {
-                     this.$http.patch(process.env.APP_URL + `api/participation/${this.id}/`, {step: step});
+                step: function (step) {
+                     this.$http.patch(process.env.APP_URL + `api/participation/${this.participation.id}/`, {step: step.id});
                 }
             }
     }
 </script>
 
-<style>
-    .participation-cell {
-        width:200px;
-    }
-</style>

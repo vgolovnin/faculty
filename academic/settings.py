@@ -144,3 +144,5 @@ STATICFILES_FINDERS = [
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+from .mailer.settings import *
