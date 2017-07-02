@@ -19,7 +19,6 @@ class ReservistAdminForm(forms.ModelForm):
         self.fields['degree'].empty_label = "Нет"
 
     def clean(self):
-        print("A=", self.cleaned_data.get('degree'))
         if (self.cleaned_data.get('degree') is not None) and self.cleaned_data.get('phd') is None:
             raise forms.ValidationError({'phd': "Это поле обязательно."})
         return self.cleaned_data
