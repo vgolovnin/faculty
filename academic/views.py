@@ -40,3 +40,11 @@ class ParticipationsViewSet(viewsets.ViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def reserveStatus(request, res_id):
+    try:
+        reservist = Reservist.objects.get(id=res_id)
+    except Reservist.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    return render(request, 'status.html', context={'reservist': reservist})

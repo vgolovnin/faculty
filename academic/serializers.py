@@ -61,13 +61,14 @@ class ReservistsTemplateSerializer(ReservistsSerializer):
     class Meta:
         model = Reservist
         fields = ReservistsSerializer.Meta.fields +\
-                 ('birthday', 'step')
+                 ('birthday', 'step', 'degree')
 
     department = DepartmentSerializer()
     birthday = serializers.SerializerMethodField()
     phd = serializers.SerializerMethodField()
     status = StatusSerializer()
     step = serializers.SerializerMethodField()
+    degree = serializers.SlugRelatedField('short_name', read_only=True)
 
     def get_step(self, obj):
         return Participation.objects.get(reservist=obj, stage=self.context['stage']).step.name

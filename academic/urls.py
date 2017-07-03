@@ -15,7 +15,6 @@ urlpatterns = [
     url(r'^reports/$', views.index),
     url(r'^api/', include(router.urls)),
     url(r'^admin/', admin.site.urls),
-    url(r'^reminders/reservist/(?P<reservist_id>[0-9]+)/stage/(?P<stage_id>[0-9]+)$', reminders.mail),
-    url(r'^reports/stage/(?P<stage_id>[0-9]+)/template/(?P<template_id>[0-9]+)$', reports.make)
+    url(r'^reports/stage/(?P<stage_id>[0-9]+)/template/(?P<template_id>[0-9]+)$', reports.make),
 ]
 
