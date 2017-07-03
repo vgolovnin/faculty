@@ -1,7 +1,7 @@
 (function($){
     function togglePhd(){
         const phd = $("#id_phd").parent();
-        if ($("#id_degree").val() === "NO")
+        if ($("#id_degree").val() === "Нет")
         {
             phd.hide();
             phd.parent().find(".errorlist").hide();
