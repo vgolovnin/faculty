@@ -55,5 +55,5 @@
 
 <style>
     .reserve-table{ margin: 2% 0 0 5%;}
-    .status-header, .reports-header{margin-left: -3%;}
+    .status-header {margin-left: -3%;}
 </style>
