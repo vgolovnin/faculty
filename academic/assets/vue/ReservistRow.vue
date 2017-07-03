@@ -1,20 +1,10 @@
 <template>
-    <tr class="reservist-row">
-        <td><a :href="res.admin_url">{{ res.name }}</a>
-            <a :href="res.personal_page" class="fi-web"></a>
-            <a :href="mailto" class="fi-at-sign"></a>
-            <div class="callout fi-results-demographics" title="Возраст" v-bind:class="{alert: warnings.age}"> {{ res.age }}</div>
-            <div class="callout fi-home" title="Стаж работы" v-bind:class="{alert: warnings.hse}"> {{ res.experience }}</div>
-            <div class="callout fi-pencil" title="Учёная степень" v-bind:class="{alert: warnings.phd}"> {{ res.phd }}</div>
-        </td>
-        <td class="callout">
-            <span style="font-style:italic;">{{ res.position }}</span><br/>
-            {{ res.department }}
-            <div class="callout warning fi-alert" v-if="warnings.department"> Квота</div>
-        </td>
-        <td is="participation-cell" v-for="p in participations" :stage="p.stage" :step_default="p.step_selected" :id="p.id">
-        </td>
-    </tr>
+    <div class="reservist-row">
+        <reservist-card :res="res" :warnings="this.warnings"></reservist-card>
+        <participation-cell v-for="p in participations" :key="p.id"
+                            :participation="p"  :readonly="false">
+        </participation-cell>
+    </div>
 </template>
 
 <script>
@@ -26,21 +16,55 @@
             participations() {
                 return _.sortBy(this.part, "stage.deadline");
             },
-            mailto(){
-                return 'mailto:' + this.res.email;
-            },
         },
         components: {
+            'reservist-card': require('./ReservistCard.vue'),
             'participation-cell': require('./ParticipationCell.vue'),
         }
     }
 </script>
 
-<style>
-
-    .reservist-row td > .callout
+<style lang="scss">
+    .reservist-row
     {
-        padding: 4px 16px;
-        margin-bottom: 4px;
+        white-space: nowrap;
+        clear: both;
+        font-size: 0;
+
+        .reserve-cell {
+            white-space: normal;
+            display: inline-block;
+            vertical-align: top;
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            margin-bottom: 0.2rem;
+            margin-left: 0.2rem;
+            width: 150px;
+            min-height: 8rem;
+            max-height: 230px;
+            /*height: 230px;*/
+            border: 1px solid rgba(10, 10, 10, 0.25);
+            select, label {
+                font-size: 0.8rem;
+            }
+
+            em {
+                text-align: right;
+                position: absolute;
+                top: 1.5rem;
+                right: 10px;
+                width: 7rem;
+            }
+
+            &.callout {
+                label {
+                    height: 6rem;
+                    a {
+                        display: block;
+                        height: 3rem;
+                    }
+                }
+            }
+        }
     }
 </style>
