@@ -2,23 +2,28 @@ import Vue from 'vue'
 import VueResource from 'vue-resource'
 import VueRouter from 'vue-router'
 import Cookies from 'js-cookie'
-import _ from 'lodash'
+import vmodal from 'vue-js-modal' 
 
 import './css/main.css'
 
 Vue.use(VueRouter)
 Vue.use(VueResource)
+Vue.use(vmodal)
 Vue.http.headers.common['X-CSRFToken'] = Cookies.get('csrftoken');
-
-import Reserve from './vue/Reserve.vue'
-import Reports from './vue/Reports.vue'
 
 
 const router = new VueRouter({
+    base: process.env.APP_URL,
     mode: 'history',
     routes: [
-    {path: '/', component: Reserve},
-    {path: '/reports/', component: Reports},
-]})
+    {path: '/', component: require('./vue/Reserve.vue')},
+    {path: '/reports/', component: require('./vue/Reports.vue')},
+]});
 
-new Vue({router}).$mount('#fs')
+const vue = new Vue({
+    router: router,
+    components: {
+        'modal-mailer': require('./vue/ModalMailer.vue'),
+        'navbar': require('./vue/NavBar.vue')
+    }
+}).$mount('#app');

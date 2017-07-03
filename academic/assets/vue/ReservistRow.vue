@@ -1,68 +1,70 @@
 <template>
-    <tr class="reservist-row">
-        <td><a :href="res.admin_url">{{ res.name }}</a>
-            <a :href="res.personal_page" class="fi-web"></a>
-            <a :href="mailto(res.email)" class="fi-at-sign"></a>
-            <div class="callout" v-bind:class="{alert: res.warnings.age}">Возраст: {{ res.age }}</div>
-            <div class="callout" v-bind:class="{alert: res.warnings.hse}">Стаж: {{ res.experience }}</div>
-            <div class="callout" v-bind:class="{alert: res.warnings.phd}">Уч. степень: {{ res.phd }}</div>
-        </td>
-        <td class="callout" v-bind:class="{warning: res.warnings.department}">
-            <span style="font-style:italic;">{{ res.position }}</span><br/>
-            {{ res.department }}
-        </td>
-        <td style="width:200px;" class="callout" v-bind:class="{warning: stagewarning(pstage)}"
-            v-for="pstage in datesort(res.participations)">
-            <a :href="pstage.stage.admin_url">{{ pstage.stage.name }}</a>
-            <div class="fi-calendar"> {{ pstage.stage.deadline }}
-                <a :href="reminder(res, pstage.stage)" v-if="!pstage.disabled" class="fi-mail"
-                   onclick="return confirm('Send mail')"></a>
-            </div>
-            <select v-model="pstage.step_selected" :disabled="pstage.disabled">
-                <option v-for="step in pstage.stage.steps" :value="step.id">{{ step.name }}</option>
-            </select>
-        </td>
-    </tr>
+    <div class="reservist-row">
+        <reservist-card :res="res" :warnings="this.warnings"></reservist-card>
+        <participation-cell v-for="p in participations" :key="p.id"
+                            :participation="p"  :readonly="false">
+        </participation-cell>
+    </div>
 </template>
 
 <script>
     export default
     {
         name: "ReservistRow",
-        props: ['res'],
-        methods: {
-            mailto(email){
-                return 'mailto:' + email;
+        props: ['res', 'warnings', 'part'],
+        computed: {
+            participations() {
+                return _.sortBy(this.part, "stage.deadline");
             },
-            datesort(part){
-                return _.sortBy(part, "stage.deadline");
-            },
-            stagewarning(pstage)
-            {
-                return pstage.stage.warning && (pstage.step_selected == _.first(pstage.stage.steps).id);
-            },
-            reminder(res, stage)
-            {
-                return "reminders/reservist/" + res.id + "/stage/" + stage.id;
-            }
         },
-        watch: {
-            'res.participations': {
-                handler: function () {
-                    this.$http.patch(this.res.url, {
-                        'participations': this.res.participations
-                    })
-                },
-                deep: true
-            },
+        components: {
+            'reservist-card': require('./ReservistCard.vue'),
+            'participation-cell': require('./ParticipationCell.vue'),
         }
     }
 </script>
 
-<style>
-    .reservist-row td > .callout
+<style lang="scss">
+    .reservist-row
     {
-        padding: 4px 16px;
-        margin-bottom: 4px;
+        white-space: nowrap;
+        clear: both;
+        font-size: 0;
+
+        .reserve-cell {
+            white-space: normal;
+            display: inline-block;
+            vertical-align: top;
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            margin-bottom: 0.2rem;
+            margin-left: 0.2rem;
+            width: 150px;
+            min-height: 8rem;
+            max-height: 230px;
+            /*height: 230px;*/
+            border: 1px solid rgba(10, 10, 10, 0.25);
+            select, label {
+                font-size: 0.8rem;
+            }
+
+            em {
+                text-align: right;
+                position: absolute;
+                top: 1.5rem;
+                right: 10px;
+                width: 7rem;
+            }
+
+            &.callout {
+                label {
+                    height: 6rem;
+                    a {
+                        display: block;
+                        height: 3rem;
+                    }
+                }
+            }
+        }
     }
 </style>

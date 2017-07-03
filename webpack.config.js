@@ -20,8 +20,10 @@ module.exports = {
                 test: /\.vue$/,
                 loader: 'vue-loader',
                 options: {
-                    loaders: {}
-                    // other vue-loader options go here
+                    loaders: {
+                        css: 'style-loader!css-loader',
+                        scss: 'style-loader!css-loader!sass-loader'
+                    }
                 }
             },
             {
@@ -60,8 +62,8 @@ module.exports = {
         }
     },
     devServer: {
-        historyApiFallback: true,
-        noInfo: true
+        hot: true,
+        proxy: {'**': 'http://localhost:8000/'},
     },
     performance: {
         hints: false
@@ -69,19 +71,19 @@ module.exports = {
     devtool: '#eval-source-map',
 
     plugins: [
-        new BundleTracker({filename: './webpack-stats.json'})
+        new BundleTracker({filename: './webpack-stats.json'}),
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+                APP_URL: process.env.NODE_ENV === 'production' ? `'/faculty/'` : `'/'`,
+            }
+        }),
     ],
 }
 
 if (process.env.NODE_ENV === 'production') {
     module.exports.devtool = '#source-map'
-    // http://vue-loader.vuejs.org/en/workflow/production.html
-    module.exports.plugins = (module.exports.plugins || []).concat([
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: '"production"'
-            }
-        }),
+    module.exports.plugins.concat([
         new webpack.optimize.UglifyJsPlugin({
             sourceMap: true,
             compress: {

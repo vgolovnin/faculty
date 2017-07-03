@@ -8,7 +8,7 @@ from datetime import date
 class StepsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Step
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'is_final')
 
 
 class StatusSerializer(serializers.ModelSerializer):
@@ -61,13 +61,14 @@ class ReservistsTemplateSerializer(ReservistsSerializer):
     class Meta:
         model = Reservist
         fields = ReservistsSerializer.Meta.fields +\
-                 ('birthday', 'step')
+                 ('birthday', 'step', 'degree')
 
     department = DepartmentSerializer()
     birthday = serializers.SerializerMethodField()
     phd = serializers.SerializerMethodField()
     status = StatusSerializer()
     step = serializers.SerializerMethodField()
+    degree = serializers.SlugRelatedField('short_name', read_only=True)
 
     def get_step(self, obj):
         return Participation.objects.get(reservist=obj, stage=self.context['stage']).step.name
@@ -82,30 +83,26 @@ class ReservistsTemplateSerializer(ReservistsSerializer):
 class ParticipationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participation
-        fields = ('stage', 'step_selected', 'disabled')
+        fields = ('id', 'reservist', 'stage', 'step')
 
-    disabled = serializers.SerializerMethodField()
-    stage = StagesSerializer()
-    step_selected = serializers.PrimaryKeyRelatedField(source='step', queryset=Step.objects.all())
-
-    def get_disabled(self, obj):
-        return not self.context['request'].user.is_authenticated()
+    reservist = serializers.PrimaryKeyRelatedField(read_only=True)
+    stage = serializers.PrimaryKeyRelatedField(read_only=True)
+    step = serializers.PrimaryKeyRelatedField(queryset=Step.objects.all())
 
 
 class ReservistsWebSerializer(ReservistsSerializer):
     class Meta:
         model = Reservist
         fields = ReservistsSerializer.Meta.fields +\
-                 ('id', 'url', 'admin_url', 'personal_page', 'email', 'participations', 'warnings', 'age')
+                 ('id', 'admin_url', 'personal_page', 'email', 'warnings', 'age')
 
     admin_url = serializers.SerializerMethodField()
     phd = serializers.SerializerMethodField()
-    participations = ParticipationSerializer(many=True)
     warnings = serializers.SerializerMethodField()
 
     @staticmethod
     def get_warnings(obj):
-        datereq = DateRequirment.objects.filter(stage__reservist=obj)
+        datereq = DateRequirment.objects.filter(category=obj.category, status=obj.status)
         phdreq = datereq.filter(field='phd')
         dept = obj.department
         return {

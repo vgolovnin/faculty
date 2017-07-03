@@ -1,17 +1,10 @@
 <template>
-    <div>
+    <div class="reserve-table">
         <div v-for="(categories,status) in groupedReserve">
             <h4 class="status-header">Статус участия: {{ status }}</h4>
-            <div v-for="(table, category) in categories">
+            <div v-for="(table, category) in categories" class="clearfix">
                 <h5>{{ category }}</h5>
-                <table>
-                    <thead>
-                    <th style="width:300px;">Сотрудник</th>
-                    <th style="width:200px;">Должность</th>
-                    <th v-for="pstage in table.participations"></th>
-                    </thead>
-                    <tr is="reservist-row" v-for="r in table.reservists" :res="r" :key="r.url"></tr>
-                </table>
+                <reservist-row v-for="r in table" :key="r.id" :res="r" :part="filterParticipations(r)" :warnings="r.warnings"></reservist-row>
             </div>
         </div>
     </div>
@@ -23,27 +16,35 @@
     {
         name: "ReserveTable",
         data: () => ({
-            reserve: []
+            reserve: [],
+            participations: [],
+            stages: [],
         }),
         computed: {
             groupedReserve(){
                 return _.mapValues(_.groupBy(this.reserve, 'status'),
-                    status_group =>
-                        _.mapValues(_.groupBy(status_group, 'category'),
-                            c_group => ({
-                                participations: c_group[0].participations,
-                                reservists: c_group
-                            })
-                        ));
+                    status_group => _.groupBy(status_group, 'category')
+                );
             },
         },
         mounted: function () {
-            this.$http.get('api/reserve/').then(function (resp) {
-                    this.reserve = resp.data;
+            this.$http.get(process.env.APP_URL + 'api/participation').then(function (resp) {
+                    _.assign(this, resp.data);
                 },
                 function (resp) {
                     console.log(resp);
                 });
+        },
+        methods: {
+            filterParticipations(r) {
+                return _.mapValues(_.filter(this.participations, ['reservist', r.id]),
+                    participation => ({
+                        id: participation.id,
+                        stage: _.find(this.stages, ['id', participation.stage]),
+                        step_selected: participation.step,
+                    })
+                );
+            }
         },
 
         components: {
@@ -53,8 +54,6 @@
 </script>
 
 <style>
-    td.callout
-    {
-        border: 0px;
-    }
+    .reserve-table{ margin: 2% 0 0 5%;}
+    .status-header {margin-left: -3%;}
 </style>

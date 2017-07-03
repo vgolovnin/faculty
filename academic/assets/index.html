@@ -7,30 +7,10 @@
     {% render_bundle 'main' attrs='defer' %}
 </head>
 <body>
-<div class="app" id="fs">
-<nav>
-<div class="top-bar">
-  <div class="top-bar-left">
-    <ul class="dropdown menu" data-dropdown-menu>
-      <li class="menu-text">Академический кадровый резерв</li>
-      <li>
-          <span><router-link to="/">Участники программы</router-link>
-          <a href="/admin/academic/reservist/add/" class="fi-plus"></a></span>
-      </li>
-      {%  if perms.academic.reports %}
-        <li><router-link to="/reports">Отчёты</router-link></li>
-      {% endif %}
-      <li><a href="/admin/">Администрирование</a></li>
-    </ul>
-  </div>
-</div>
-</nav>
-
-    <div id="app">
-
+<div id="app">
+    <navbar></navbar>
+    <modal-mailer></modal-mailer>
     <router-view></router-view>
-    </div>
 </div>
-
 </body>
 </html>

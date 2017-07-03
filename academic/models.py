@@ -8,6 +8,7 @@ from .settings import BASE_DIR
 
 class Department(models.Model):
     name = models.CharField('Название', max_length=200)
+    short_name = models.CharField('Сокращённое название', max_length=200, null=True)
     quota = models.IntegerField(default=4, verbose_name="Квота на участие")
     parent = models.ForeignKey('Department', verbose_name="Вышестоящее подразделение", related_name='children', null=True, blank=True)
 
@@ -23,7 +24,7 @@ class Department(models.Model):
             return "%s, %s" % (self.parent.full_name, self.name)
 
     def __str__(self):
-        return self.name
+        return self.short_name if self.short_name else self.name
 
 
 class Category(models.Model):
@@ -59,14 +60,15 @@ DATE_CHOICE = (
 
 class DateRequirment(models.Model):
     class Meta:
-        unique_together = ('field', 'stage')
+        unique_together = ('field', 'category', 'status')
         verbose_name = "Формальное требование"
         verbose_name_plural = "Формальные требования"
 
     field = models.CharField(max_length=3, choices=DATE_CHOICE, verbose_name="Тип")
     threshold_min = models.DateField(null=True, blank=True, verbose_name="Минимум")
     threshold_max = models.DateField(null=True, blank=True, verbose_name="Максимум")
-    stage = models.ForeignKey('Stage')
+    category = models.ForeignKey('Category')
+    status = models.ForeignKey('Status')
 
 
 class StageSet(models.Model):
@@ -115,9 +117,6 @@ class Stage(models.Model):
     def __str__(self):
         return self.stagename
 
-# RTL_DIR = '/home/andrey/faculty/faculty_support/report_templates'
-RTL_DIR = os.path.join(BASE_DIR, 'report_templates')  # todo BASE_DIR
-
 
 class ReportTemplate(models.Model):
     class Meta:
@@ -128,11 +127,12 @@ class ReportTemplate(models.Model):
         )
 
     name = models.CharField(max_length=200, verbose_name="Название")
-    template_file = models.FileField('Файл шаблона', null=True, blank=True, upload_to=RTL_DIR)
+    template_file = models.FileField('Файл шаблона', null=True, blank=True, upload_to='report_templates')
     stageset = models.ForeignKey(StageSet, related_name='templates')
 
     def __str__(self):
         return self.name
+
 
 class Step(models.Model):
     class Meta:
@@ -140,8 +140,9 @@ class Step(models.Model):
         verbose_name_plural = "Шаги"
         unique_together = ('name', 'stageset')
 
-    name = models.CharField(max_length=200)
+    name = models.CharField('Название', max_length=200)
     stageset = models.ForeignKey(StageSet, related_name='steps')
+    is_final = models.BooleanField('Является финальным', default=False)
 
     def __str__(self):
         return self.name

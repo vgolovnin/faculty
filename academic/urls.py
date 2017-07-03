@@ -2,20 +2,20 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from . import views, reports, reminders
 from rest_framework import routers
-from .views import ReservistsViewSet, ReportsViewSet
+from .views import ReportsViewSet, ParticipationsViewSet
 
 
 router = routers.DefaultRouter()
-router.register(r'reserve', ReservistsViewSet, base_name='reservist')
 router.register(r'reports', ReportsViewSet, base_name='report')
+router.register(r'participation', ParticipationsViewSet, base_name='participation')
 
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^reports/$', views.index, name='reports'),
+    url(r'^$', views.index),
+    url(r'^reports/$', views.index),
     url(r'^api/', include(router.urls)),
     url(r'^admin/', admin.site.urls),
-    url(r'^reminders/reservist/(?P<reservist_id>[0-9]+)/stage/(?P<stage_id>[0-9]+)$', reminders.mail),
-    url(r'^reports/stage/(?P<stage_id>[0-9]+)/template/(?P<template_id>[0-9]+)$', reports.make)
+    url(r'^reports/stage/(?P<stage_id>[0-9]+)/template/(?P<template_id>[0-9]+)$', reports.make),
+    url(r'^mailers/participation/(?P<participation_id>[0-9]+)$', reminders.get_mail)
 ]
 
