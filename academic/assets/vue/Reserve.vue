@@ -2,17 +2,9 @@
     <div>
         <div v-for="(categories,status) in groupedReserve">
             <h4 class="status-header">Статус участия: {{ status }}</h4>
-            <div v-for="(table, category) in categories">
+            <div v-for="(table, category) in categories" class="clearfix">
                 <h5>{{ category }}</h5>
-                <table>
-                    <thead>
-                    <th style="width:300px;">Сотрудник</th>
-                    <th style="width:200px;">Должность</th>
-                    <th></th>
-                    </thead>
-                    <tr is="reservist-row" v-for="r in table" :res="r"
-                        :part="filterParticipations(r)" :warnings="r.warnings" :key="r.url"></tr>
-                </table>
+                <reservist-row v-for="r in table" :key="r.id" :res="r" :part="filterParticipations(r)" :warnings="r.warnings"></reservist-row>
             </div>
         </div>
     </div>
@@ -60,10 +52,3 @@
         }
     }
 </script>
-
-<style>
-    td.callout
-    {
-        border: 0px;
-    }
-</style>
