@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="reserve-table">
         <div v-for="(categories,status) in groupedReserve">
             <h4 class="status-header">Статус участия: {{ status }}</h4>
             <div v-for="(table, category) in categories" class="clearfix">
@@ -52,3 +52,8 @@
         }
     }
 </script>
+
+<style>
+    .reserve-table{ margin: 2% 0 0 5%;}
+    .status-header, .reports-header{margin-left: -3%;}
+</style>

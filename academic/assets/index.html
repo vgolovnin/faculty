@@ -7,11 +7,10 @@
     {% render_bundle 'main' attrs='defer' %}
 </head>
 <body>
-<div class="app" id="fs">
+<div id="app">
     <navbar></navbar>
-    <div id="app">
-        <router-view></router-view>
-    </div>
+    <modal-mailer></modal-mailer>
+    <router-view></router-view>
 </div>
 </body>
 </html>
