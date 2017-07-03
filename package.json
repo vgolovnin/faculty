@@ -1,7 +1,7 @@
 {
   "name": "faculty",
   "description": "Academic Reserve HSE",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "author": "Victor Golovnin <victor.golovnin@gmail.com>",
   "private": true,
   "scripts": {
