@@ -8,8 +8,11 @@
 # install dependencies
 npm install
 
+# run python backend for development
+npm run runserver
+
 # serve with hot reload at localhost:8080
-npm run dev
+npm run hot
 
 # build for production with minification
 npm run build
