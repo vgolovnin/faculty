@@ -1,29 +1,31 @@
 <template>
-        <nav>
-        <div class="top-bar">
-            <div class="top-bar-left">
-                <ul class="dropdown menu" data-dropdown-menu>
-                    <li class="menu-text">Академический <br/>кадровый резерв</li>
-                    <li><span><router-link to="/">Участники программы</router-link>
-                        <a href="#" class="fi-plus" @click.prevent="al1()"></a></span>
-                    </li>
-                        <li><router-link to="/reports">Отчёты</router-link></li>
-                    <li><a href="/admin/">Администрирование</a></li>
-                </ul>
-            </div>
+<nav>
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <ul class="dropdown menu" data-dropdown-menu>
+                <li><img :src="logo" alt="Академический кадровый резерв"></li>
+                <li><router-link to="/">Участники программы</router-link>
+                </li>
+                <li><span><a href="#" class="fi-plus" @click.prevent="al1()"> Добавить участника</a></span></li>
+                <li><router-link to="/reports">Отчёты</router-link></li>
+                <li><a href="/admin/">Администрирование</a></li>
+            </ul>
         </div>
-            <modal name="ifr" :width=1000 :height=700>
-                <iframe id="if0" src="/admin/academic/reservist/add?_popup=1" @load="al2()"
-                        width="1000" height="700" frameborder="0"></iframe>
-            </modal>
-    </nav>
+    </div>
+    <modal name="ifr" :width=1000 :height=700>
+    <iframe id="if0" src="/admin/academic/reservist/add?_popup=1" @load="al2()"
+    width="1000" height="700" frameborder="0"></iframe>
+    </modal>
+</nav>
 </template>
 
 <script>
+    import logo from '../logo.png'
     export default {
         name: 'navbar',
         data: () => ({
-           frame: 0,
+            logo: logo,
+            frame: 0
         }),
         methods: {
             al1(){
