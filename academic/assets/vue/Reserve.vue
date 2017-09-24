@@ -11,6 +11,7 @@
 </template>
 
 <script>
+    import _ from 'lodash'
     import ReservistRow from './ReservistRow.vue'
     export default
     {

@@ -26,4 +26,6 @@ const vue = new Vue({
         'modal-mailer': require('./vue/ModalMailer.vue'),
         'navbar': require('./vue/NavBar.vue')
     }
-}).$mount('#app');
+})
+
+vue.$mount('#app');
