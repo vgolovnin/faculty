@@ -32,7 +32,9 @@
                     _.assign(this, resp.data);
                 },
                 function (resp) {
-                    console.log(resp);
+                    if (resp.status === 403) {
+                        document.location.replace('/admin/login')
+                    } 
                 });
         },
         methods: {
