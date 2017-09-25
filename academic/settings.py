@@ -119,7 +119,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/dist/'
 STATIC_ROOT = os.path.join(BASE_DIR, "dist")
 
 STATICFILES_DIRS = []
@@ -127,7 +127,7 @@ STATICFILES_DIRS = []
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'static/',
+        'BUNDLE_DIR_NAME': 'dist/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
