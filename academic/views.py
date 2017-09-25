@@ -13,7 +13,7 @@ def index(request):
 
 class ReportsViewSet(viewsets.ModelViewSet):
     serializer_class = ReportsSerializer
-    queryset = Stage.objects.filter(stageset__templates__isnull=False).order_by('deadline')
+    queryset = Stage.objects.filter(stageset__templates__isnull=False).order_by('deadline').distinct()
 
 
 @permission_classes([IsAuthenticated, ])
