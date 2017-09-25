@@ -8,6 +8,7 @@
 # Зависимости
 python >= 3.5
 node.js >= 5.10
+yarn >= 1.0
 
 
 # Установка 
@@ -16,17 +17,15 @@ $ virtualenv -p python3 venv
 $ source venv/bin/activate
 $ pip install -r requirments.txt
 
-$ npm install
+$ yarn install
 
 
 # run python backend for development
-npm run server
+yarn run server
 
 # serve with hot reload at localhost:8080
-npm run hot
+yarn run hot
 
 # build for production with minification
-npm run build
+yarn run build
 ```
-
-For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
