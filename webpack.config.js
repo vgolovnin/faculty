@@ -10,8 +10,8 @@ module.exports = {
         academic_admin: './admin/academic_admin.js',
     },
     output: {
-        path: path.resolve(__dirname, './static'),
-        publicPath: '/static/',
+        path: path.resolve(__dirname, './dist'),
+        publicPath: '/dist/',
         filename: '[name].js'
     },
     module: {

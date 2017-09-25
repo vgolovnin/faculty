@@ -25,8 +25,7 @@ npm run server
 # serve with hot reload at localhost:8080
 npm run hot
 
-# build for production with minification
+# build for production
+python manage.py collectstatic
 npm run build
 ```
-
-For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
