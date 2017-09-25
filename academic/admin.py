@@ -52,7 +52,7 @@ class StepAdminInline(admin.TabularInline):
 
 class DateRequirmentAdminInline(admin.TabularInline):
     model = DateRequirment
-    fields = ('field', 'threshold_min', 'threshold_max', 'status')
+    fields = ('field', 'threshold_min', 'threshold_max', 'status', 'description')
 
 
 class ReportTemplateAdminInline(admin.TabularInline):

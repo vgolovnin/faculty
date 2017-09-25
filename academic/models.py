@@ -67,6 +67,7 @@ class DateRequirment(models.Model):
     field = models.CharField(max_length=3, choices=DATE_CHOICE, verbose_name="Тип")
     threshold_min = models.DateField(null=True, blank=True, verbose_name="Минимум")
     threshold_max = models.DateField(null=True, blank=True, verbose_name="Максимум")
+    description = models.CharField('Описание', max_length=256, blank=True)
     category = models.ForeignKey('Category')
     status = models.ForeignKey('Status')
 

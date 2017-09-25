@@ -1,4 +1,4 @@
-from .models import Reservist, Department, Stage, Status, Step, Participation, DateRequirment, ReportTemplate
+from .models import Reservist, Department, Stage, Status, Category, Step, Participation, DateRequirment, ReportTemplate
 from rest_framework import serializers
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -10,12 +10,24 @@ class StepsSerializer(serializers.ModelSerializer):
         model = Step
         fields = ('id', 'name', 'is_final')
 
-
 class StatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Status
         fields = ('name', 'description')
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('name', 'description', 'agereq')
+
+    agereq = serializers.SerializerMethodField()
+
+    def get_agereq(self, obj):
+        agereq = DateRequirment.objects.filter(category=obj, field='bth')
+        if len(agereq):
+            return agereq[0].description
+        else:
+            return " "        
 
 class StagesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -49,9 +61,8 @@ class DepartmentSerializer(serializers.ModelSerializer):
 class ReservistsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservist
-        fields = ('name', 'category', 'status', 'department', 'position', 'experience', 'phd')
+        fields = ('name', 'status', 'department', 'position', 'experience', 'phd')
 
-    category = serializers.StringRelatedField()
     status = serializers.StringRelatedField()
     department = serializers.StringRelatedField()
     position = serializers.StringRelatedField()
@@ -61,8 +72,9 @@ class ReservistsTemplateSerializer(ReservistsSerializer):
     class Meta:
         model = Reservist
         fields = ReservistsSerializer.Meta.fields +\
-                 ('birthday', 'step', 'degree')
+                 ('birthday', 'category', 'step', 'degree')
 
+    category = CategorySerializer()
     department = DepartmentSerializer()
     birthday = serializers.SerializerMethodField()
     phd = serializers.SerializerMethodField()
@@ -94,8 +106,9 @@ class ReservistsWebSerializer(ReservistsSerializer):
     class Meta:
         model = Reservist
         fields = ReservistsSerializer.Meta.fields +\
-                 ('id', 'admin_url', 'personal_page', 'email', 'warnings', 'age')
+                 ('id', 'category', 'admin_url', 'personal_page', 'email', 'warnings', 'age')
 
+    category = serializers.StringRelatedField()
     admin_url = serializers.SerializerMethodField()
     phd = serializers.SerializerMethodField()
     warnings = serializers.SerializerMethodField()
