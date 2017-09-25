@@ -75,7 +75,7 @@ module.exports = {
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-                APP_URL: process.env.NODE_ENV === 'production' ? `'/faculty/'` : `'/'`,
+                APP_URL: `'/'`,
             }
         }),
     ],
