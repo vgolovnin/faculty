@@ -7,7 +7,7 @@
   "scripts": {
     "server": "python manage.py runserver",
     "hot": "cross-env NODE_ENV=development webpack-dev-server --inline --hot",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "build": "python manage.py collectstatic --noinput && cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
     "ajv": "^5.2.2",
