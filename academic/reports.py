@@ -3,7 +3,7 @@ from jinja2 import TemplateSyntaxError
 from urllib.parse import quote
 import jinja2
 import pymorphy2
-from .models import Step, Stage, ReportTemplate
+from .models import Step, Stage, Department, ReportTemplate
 from .serializers import ReservistsTemplateSerializer
 from docxtpl import DocxTemplate
 from datetime import date
@@ -39,9 +39,11 @@ def inflect(dept, transform='gent'):
 def make(request, stage_id, template_id):
     template = ReportTemplate.objects.get(id=template_id)
     stage = Stage.objects.get(id=stage_id)
+    departments = Department.objects.filter(stage=stage)
     reservists = stage.reservists.all()
     context = {
         'stage': stage,
+        'departments': departments,
         'year': date.today().year,
         'dataset': ReservistsTemplateSerializer(reservists, many=True, context={'stage': stage}).data
     }
