@@ -22,7 +22,7 @@ SECRET_KEY = '=yx2v(0b46572wgvyutj9cn52ag2o$vcnb-$o8r-5g5%g(%w_e'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['faculty.vgolovnin.me']
 
 # Application definition
 
