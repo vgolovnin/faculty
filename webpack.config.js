@@ -7,7 +7,7 @@ module.exports = {
     context: path.join(__dirname, 'academic', 'assets'),
     entry: {
         main: './index.js',
-        academic_admin: './admin/academic_admin.js',
+        // academic_admin: './admin/academic_admin.js',
     },
     output: {
         path: path.resolve(__dirname, './dist'),

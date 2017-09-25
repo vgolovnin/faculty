@@ -122,7 +122,9 @@ USE_TZ = True
 STATIC_URL = '/dist/'
 STATIC_ROOT = os.path.join(BASE_DIR, "dist")
 
-STATICFILES_DIRS = []
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "academic", "assets", "admin")
+]
 
 WEBPACK_LOADER = {
     'DEFAULT': {
