@@ -20,5 +20,3 @@
         togglePhd();
     });
 })(django.jQuery);
-
-require('./academic_admin.css')
