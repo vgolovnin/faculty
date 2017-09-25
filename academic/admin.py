@@ -62,7 +62,7 @@ class ReportTemplateAdminInline(admin.TabularInline):
 @admin.register(Stage)
 class StageAdmin(admin.ModelAdmin):
     class Media:
-        css = {'all': ('css/academic_admin.css',)}
+        css = {'all': ('academic_admin.css',)}
 
     formfield_overrides = {
         models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple},
