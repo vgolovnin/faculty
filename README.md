@@ -18,14 +18,18 @@ $ pip install -r requirments.txt
 
 $ npm install
 
+# prepare db and fixtures
 
+$ npm run init
+
+# build for production
+$ npm run build
+
+----
 # run python backend for development
 npm run server
 
 # serve with hot reload at localhost:8080
 npm run hot
 
-# build for production
-python manage.py collectstatic
-npm run build
 ```

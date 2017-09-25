@@ -7,7 +7,8 @@
   "scripts": {
     "server": "python manage.py runserver",
     "hot": "cross-env NODE_ENV=development webpack-dev-server --inline --hot",
-    "build": "python manage.py collectstatic --noinput && cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "build": "python manage.py collectstatic --noinput && cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "init": "python manage.py migrate && python manage.py loaddata init/academic.json && cp -R init/report_templates media/" 
   },
   "dependencies": {
     "ajv": "^5.2.2",
