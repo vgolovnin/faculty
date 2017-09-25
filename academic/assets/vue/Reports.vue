@@ -6,7 +6,7 @@
     <ul>
         <li v-for="stage in stages">
             {{ stage.stagename }}
-             <a v-for="report in stage.templates" :href="stage.url +'/template/' + report.id" class="fi-page-export-doc"> {{ report.name }}</a>
+             <a v-for="report in stage.templates" :href="stage.url +'/template/' + report.id" class="fi-page-export-doc"> [{{ report.name }}] </a>
         </li>
     </ul>
     </div>
