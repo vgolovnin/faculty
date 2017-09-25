@@ -3,8 +3,11 @@
     <div class="top-bar">
         <div class="top-bar-left">
             <ul class="dropdown menu" data-dropdown-menu>
-                <li><img :src="logo" alt="Академический кадровый резерв"></li>
-                <li><router-link to="/">Участники программы</router-link>
+                <li>
+                    <router-link to="/">
+                    <img :src="logo" alt="Академический кадровый резерв">
+                    <span>Участники программы</span>
+                    </router-link>
                 </li>
                 <li><span><a href="#" class="fi-plus" @click.prevent="al1()"> Добавить участника</a></span></li>
                 <li><router-link to="/reports">Отчёты</router-link></li>
@@ -42,3 +45,11 @@
         }
     }
 </script>
+
+<style lang="scss">
+    .menu {
+        li {
+            margin: auto 0 auto 0;
+        }
+    }
+</style>
