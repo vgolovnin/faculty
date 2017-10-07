@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from .serializers import *
 
 
-def index(request):
+def vue(request):
     return render(request, 'index.html')
 
 
