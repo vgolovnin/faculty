@@ -1,6 +1,5 @@
 <template>
   <modal name="mailer" classes="modal-mailer" :width="width" :height="height" @before-open="beforeOpen">
-    <p class="status">{{ status }}</p>
     <form @submit.prevent="sendMail">
       <div class="row">
         <div class="medium-6 columns">
@@ -26,7 +25,12 @@
         <label>Текст письма
           <textarea v-model="mail.text"></textarea>
         </label>
-         <div class="float-right"><input type="submit" class="button"/></div>
+        <div class="float-left">
+          <p class="status">{{ status }}</p>
+        </div>
+         <div class="float-right">
+            <input type="submit" class="button" :disabled="submitDisabled" />
+          </div>
       </div>
     </form>
   </modal>
@@ -43,26 +47,35 @@
       },
       height: {
         type: Number,
-        default: 700
+        default: 650
       }
     },
     data: () => ({
       participationId: 0,
       mail: {from: "", to: "", subject: "", text: ""},
-      status: ''
+      status: '',
+      submitDisabled: true
     }),
     methods: {
       async beforeOpen(event) {
         this.participationId = event.params.participation.id
         this.status = ''
-        let resp = await this.$http.get(process.env.APP_URL + `mailers/participation/${this.participationId}`)
-        _.assign(this.mail, resp.data);
+        this.submitDisabled = true
+        let resp = await this.$http.get(process.env.APP_URL + `mailers/preview/${this.participationId}`)
+        _.assign(this.mail, resp.data)
+        this.submitDisabled = false
       },
       async sendMail() {
+        this.submitDisabled = true
         console.log('gonna send', this.mail);
         let resp = await this.$http.post(process.env.APP_URL + 'mailers/send_reminder', _.pick(this.mail, ['to', 'subject', 'text']))
         console.log(resp)
-        this.status = resp.body.error ? resp.body.error : 'Письмо отправлено!'
+        if(resp.body.error) {
+          this.status = resp.body.error
+          this.submitDisabled = false
+        } else {
+          this.status = 'Письмо отправлено!'
+        }
       }
     }
   }

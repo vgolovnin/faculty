@@ -54,7 +54,6 @@ ROOT_URLCONF = 'academic.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'academic', 'assets')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -64,6 +63,10 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
+    'DIRS': [
+      os.path.join(BASE_DIR, 'academic', 'assets'),
+      os.path.join(BASE_DIR, 'academic', 'mailer'),
+    ],
     },
 ]
 
