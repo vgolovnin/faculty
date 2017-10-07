@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib import admin
-
+import datetime
 from .models import *
 
 admin.site.site_header = 'Академический кадровый резерв'
@@ -58,8 +58,30 @@ class ReportTemplateAdminInline(admin.TabularInline):
     model = ReportTemplate
     fields = ('name', 'template_file')
 
+
+class ReminderDurationField(forms.DurationField):
+    def prepare_value(self, value):
+        if isinstance(value, datetime.timedelta):
+            return value.days
+        return value
+
+    def to_python(self, value):
+        try:
+            return datetime.timedelta(days=int(value))
+        except:
+            raise forms.ValidationError("Укажите целое число дней") 
+
+
+class StageForm(forms.ModelForm):
+    reminder = ReminderDurationField()
+    class Meta:
+        model = Stage
+        fields = '__all__'
+
+
 @admin.register(Stage)
 class StageAdmin(admin.ModelAdmin):
+    form = StageForm
     class Media:
         css = {'all': ('academic_admin.css',)}
 
