@@ -1,14 +1,9 @@
 <template>
   <div class="reserve-cell callout" :class="{warning: deadlineWarning}">
-    <label v-if="!readonly" >
       <a :href="stage.admin_url">{{ stage.name }}</a>
       <select v-model="step_id" >
         <option v-for="step in stage.steps" :value="step.id">{{ step.name }}</option>
       </select>
-    </label>
-    <div v-else>{{ stage.name }}
-      <h5 class="text-center">{{ step.name }}</h5>
-    </div>
     <span class="fi-calendar float-right"> {{ stage.deadline }}
       <a @click="reminder()" v-if="deadlineWarning" class="fi-mail"></a>
     </span>
@@ -20,7 +15,7 @@
   export default
   {
     name: 'participation-cell',
-    props: ['participation', 'readonly'],
+    props: ['participation'],
     data() {
       return {
         step_id: this.participation.step_selected,

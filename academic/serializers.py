@@ -55,7 +55,7 @@ class StagesSerializer(serializers.ModelSerializer):
 class DepartmentSerializer(serializers.ModelSerializer):
   class Meta:
     model = Department
-    fields = ('name', 'full_name')
+    fields = ('short_name', 'name', 'full_name')
 
 
 class ReservistsSerializer(serializers.ModelSerializer):
@@ -64,7 +64,7 @@ class ReservistsSerializer(serializers.ModelSerializer):
     fields = ('name', 'status', 'department', 'position', 'experience', 'phd')
 
   status = serializers.StringRelatedField()
-  department = serializers.StringRelatedField()
+  department = DepartmentSerializer()
   position = serializers.StringRelatedField()
 
 
@@ -75,7 +75,6 @@ class ReservistsTemplateSerializer(ReservistsSerializer):
          ('birthday', 'category', 'step', 'degree')
 
   category = CategorySerializer()
-  department = DepartmentSerializer()
   birthday = serializers.SerializerMethodField()
   phd = serializers.SerializerMethodField()
   status = StatusSerializer()
@@ -135,7 +134,7 @@ class ReservistsWebSerializer(ReservistsSerializer):
   @staticmethod
   def get_phd(obj):
     if obj.degree is None:
-      return "Нет"
+      return "Нет учёной степени"
     else:
       return obj.degree.short_name + " (" + obj.phd.strftime("%d.%m.%Y") + ")"
 
