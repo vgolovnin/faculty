@@ -7,13 +7,13 @@ from rest_framework.response import Response
 from .serializers import *
 
 
-def index(request):
+def vue(request):
     return render(request, 'index.html')
 
 
 class ReportsViewSet(viewsets.ModelViewSet):
     serializer_class = ReportsSerializer
-    queryset = Stage.objects.filter(stageset__templates__isnull=False).order_by('deadline')
+    queryset = Stage.objects.filter(stageset__templates__isnull=False).order_by('deadline').distinct()
 
 
 @permission_classes([IsAuthenticated, ])

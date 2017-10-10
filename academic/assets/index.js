@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 import VueRouter from 'vue-router'
@@ -26,4 +27,6 @@ const vue = new Vue({
         'modal-mailer': require('./vue/ModalMailer.vue'),
         'navbar': require('./vue/NavBar.vue')
     }
-}).$mount('#app');
+})
+
+vue.$mount('#app');

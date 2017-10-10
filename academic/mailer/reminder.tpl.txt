@@ -1,0 +1,10 @@
+Здравствуйте, {{ name }}!
+Крайний срок по этапу {{ stage }} наступает {{ deadline }}
+Пожалуйста, примите во внимание.
+
+{{ signature }}
+
+-- Sincerely Yours, Leonid W. Dworzanski.
+Coordinator of High Potential group of Faculty of Computer Science
+National Research University Higher School of Economics
+mailto: leo@mathtech.ru
