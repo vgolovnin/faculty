@@ -30,7 +30,7 @@ def send_reminder(request):
 
   try:
     count = _send(   ((mail_info['subject'], mail_info['text'], DEFAULT_FROM_EMAIL, [mail_info['to']]),)     )
-  except SMTPException as err:
+  except Exception as err:
     error = str(err)
 
   return JsonResponse({
@@ -43,7 +43,6 @@ def deadline_reminder(participations):
 
 
 def _send(datatuple):
-  # print('_send', unidecode(str(datatuple)))
   return send_mass_mail(datatuple)
 
 def _render(participations):
