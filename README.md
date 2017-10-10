@@ -17,6 +17,7 @@ $ source venv/bin/activate
 $ pip install -r requirments.txt
 
 $ npm install
+$ python manage.py createsuperuser
 
 # prepare db and fixtures
 

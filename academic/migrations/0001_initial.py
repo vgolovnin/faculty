@@ -9,8 +9,6 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    replaces = [('academic', '0001_initial'), ('academic', '0002_auto_20170428_2324'), ('academic', '0003_auto_20170510_1148'), ('academic', '0004_auto_20170519_1545'), ('academic', '0007_auto_20170519_1546'), ('academic', '0008_remove_daterequirment_stage'), ('academic', '0009_daterequirment_description'), ('academic', '0010_auto_20170925_1018'), ('academic', '0011_auto_20170925_1229'), ('academic', '0012_auto_20170925_1311')]
-
     initial = True
 
     dependencies = [
