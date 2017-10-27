@@ -106,6 +106,10 @@ class StageAdmin(admin.ModelAdmin):
             res.update_participation()
 
 
+class QuotaAdminInline(admin.TabularInline):
+    model = Quota
+    fields = ('category', 'qty')
+
 @admin.register(StageSet)
 class StageSetAdmin(admin.ModelAdmin):
     inlines = (StepAdminInline, ReportTemplateAdminInline)
@@ -115,8 +119,13 @@ class CategoryAdmin(admin.ModelAdmin):
     inlines = (DateRequirmentAdminInline,)
 
 
+@admin.register(Department)
+class DepartmentAdmin(admin.ModelAdmin):
+    inlines = (QuotaAdminInline,)
+
 admin.site.register(Position)
 admin.site.register(Degree)
 
 admin.site.register(Status)
-admin.site.register(Department)
+
+

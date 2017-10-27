@@ -5,11 +5,17 @@ from dateutil import relativedelta
 from django.db import models
 from .settings import BASE_DIR
 
+class Quota(models.Model):
+  class Meta:
+    unique_together = ('department', 'category')
+
+  qty = models.IntegerField(default=4, verbose_name="Квота на участие")
+  department = models.ForeignKey('Department', verbose_name='Подразделение', related_name='quotas')
+  category = models.ForeignKey('Category', verbose_name='Категория', related_name='quotas', limit_choices_to={'is_quoted': True})
 
 class Department(models.Model):
   name = models.CharField('Название', max_length=200)
   short_name = models.CharField('Сокращённое название', max_length=200, null=True)
-  quota = models.IntegerField(default=4, verbose_name="Квота на участие")
   parent = models.ForeignKey('Department', verbose_name="Вышестоящее подразделение", related_name='children', null=True, blank=True)
 
   class Meta:
