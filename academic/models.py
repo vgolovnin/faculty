@@ -49,6 +49,7 @@ class Category(models.Model):
 class Status(models.Model):
   name = models.CharField(max_length=200)
   description = models.TextField()
+  is_quoted = models.BooleanField('Квотирование участников', default=True)
 
   class Meta:
     verbose_name = "Статус участия"
