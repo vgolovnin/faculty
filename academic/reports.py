@@ -64,6 +64,6 @@ def make(request, stage_id, template_id):
     else:
         filename = stage.stagename + ' (' + template.name + ').docx'
         response = HttpResponse(content_type=DOCX_TYPE)
-        response['Content-Disposition'] = 'attachment; filename=\'%s\'' % quote(filename, '()')
+        response['Content-Disposition'] = "attachment; filename*=UTF-8''%s" % quote(filename, '()')
         report.save(response)
         return response
