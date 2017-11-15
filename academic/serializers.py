@@ -118,7 +118,7 @@ class ReservistsWebSerializer(ReservistsSerializer):
     phdreq = datereq.filter(field='phd')
     dept = obj.department
     return {
-      'department': obj.category.is_quoted and obj.status.is_quoted and dept.reservists.filter(category=obj.category, status__is_quoted=true).count() > dept.quotas.get(category=obj.category).qty,
+      'department': obj.category.is_quoted and obj.status.is_quoted and dept.reservists.filter(category=obj.category, status__is_quoted=True).count() > dept.quotas.get(category=obj.category).qty,
       'hse': datereq.filter(Q(field='hse') & (Q(threshold_min__gte=obj.hse) |
                           Q(threshold_max__lte=obj.hse))).count() > 0,
       'phd': phdreq.count() > 0 and (obj.degree is None or phdreq.filter(Q(threshold_min__gte=obj.phd) |
